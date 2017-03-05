@@ -293,4 +293,29 @@
 		</div>
 	</div>
 </body>
+
+<script>
+var host = window.location.host;
+var websocket;
+if ('WebSocket' in window) {
+    websocket = new WebSocket("ws://" + host + "/ws" );
+} else if ('MozWebSocket' in window) {
+    websocket = new MozWebSocket("ws://" + host + "/ws");
+}
+websocket.onopen = function(evnt) {
+    console.log("websocket连接上");
+};
+websocket.onmessage = function(evnt) {
+    messageHandler(evnt.data);
+};
+websocket.onerror = function(evnt) {
+    console.log("websocket错误");
+};
+websocket.onclose = function(evnt) {
+    console.log("websocket关闭");
+}
+
+</script>
+
+
 </html>
