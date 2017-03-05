@@ -54,13 +54,105 @@
 #rooomList {
 	width: 100%;
 }
+
+.btn {
+	height: 55px;
+	width: 200px;
+}
 </style>
 
 <script type="text/javascript">
+
+
+	function enterRoom(us) {
+		var roomname = $(us).parent().find("#roomName").val();
+		var data = {
+			"roomname" : roomname
+		};
+		var url = "enterroom";
+		var callback = function(data) {
+			if ("success" == data.status) {
+				alert("进入房间成功！");
+				loadCreateRoom();
+			} else {
+				alert("进入房间失败！");
+			}
+		};
+		sendPost(url, data, callback);
+	}
+
+	function backRoom(us) {
+		var roomname = $(us).parent().find("#roomName").val();
+		var data = {
+			"roomname" : roomname
+		};
+		var url = "backroom";
+		var callback = function(data) {
+			if ("success" == data.status) {
+				alert("退出房间成功！");
+				loadCreateRoom();
+			} else {
+				alert("退出房间失败！");
+			}
+		};
+		sendPost(url, data, callback);
+	}
+
 	$(function() {
+		if (false == initUserName()) {
+			createUserName();
+		}
 		loadRoomList();
 		loadCreateRoom();
 	});
+
+	var user = null;
+	function initUserName() {
+		var created = false;
+		var data = {
+		};
+		var url = "getuserinfo";
+		var callback = function(data) {
+			if (null == data || null == data['content']) {
+				created = false;
+			} else {
+				user = data['content'];
+				$("#username").html(user['userName']);
+				created = true;
+				$("#createusername").hide();
+			}
+		};
+		sendPost(url, data, callback);
+		return created;
+	}
+
+	function createUserName() {
+		var name = prompt("给自己起一个响亮的大名吧:");
+		if (null == name || '' == name) {
+			alert("不能为空哦,请重试！");
+			return;
+		}
+		var data = {
+			"username" : name
+		};
+		var url = "createusername";
+		var callback = function(data) {
+			if ("created" == data['status']) {
+				alert("已经创建昵称！");
+			}
+			if ("exists" == data['status']) {
+				alert("该昵称已被别人占用！");
+			}
+			if ("success" == data['status']) {
+				alert('创建昵称成功')
+				initUserName();
+			}
+		};
+		sendPost(url, data, callback);
+
+	}
+
+
 
 	function loadCreateRoom() {
 		var url = "getcreatedroom";
@@ -75,7 +167,8 @@
 			var dom = getRoomDomByRoom(content);
 			$("#myRoom").append(dom);
 			dom.show();
-			$(dom).find(".back").hide();
+			$(dom).find(".enter").hide();
+			$(dom).find(".back").show();
 
 		};
 		sendPost(url, data, callback);
@@ -96,6 +189,7 @@
 				$("#rooomList").append(dom);
 				dom.show();
 				$(dom).find(".back").hide();
+				$(dom).find(".enter").show();
 			}
 		};
 		sendPost(url, data, callback);
@@ -141,6 +235,7 @@
 		$(dom).find(".status").html(stval);
 		$(dom).find(".peo1").html(user1);
 		$(dom).find(".peo2").html(user2);
+		$(dom).find("#roomName").val(roomName);
 		return dom;
 	}
 
@@ -169,7 +264,9 @@
 <body>
 	<div>
 		<input type="button" value="创建房间" onclick="createRoom()"
-			style="margin:auto;width:200px; height:55px;" />
+			style="margin:auto;width:200px; height:55px;" /> <input
+			id="createusername" class="btn" onclick="createUserName()"
+			type="button" value="创建昵称" /> <span id="username"></span>
 	</div>
 	已创建房间列表：
 	<div id="myRoom"></div>
@@ -189,8 +286,10 @@
 			</p>
 		</div>
 		<div class="contorl">
-			<input class="enter" type="button" value="进入" /> <input class="back"
-				type="button" value="退出">
+			<input class="enter" type="button" value="进入"
+				onclick="enterRoom(this)" /> <input onclick="backRoom(this)"
+				class="back" type="button" value="退出"> <input id="roomName"
+				value="" type="hidden" />
 		</div>
 	</div>
 </body>

@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.liudong.model.Room;
+import com.liudong.model.User;
 
 public class Cache {
 	private static Map<String, Room> rooms = new HashMap<String, Room>();
+
+	private static Map<String, User> users = new HashMap<String, User>();
 
 	public static Room getRoomeByName(String roomeName) {
 		return rooms.get(roomeName);
@@ -24,9 +29,55 @@ public class Cache {
 
 	public static List<Room> getRoomList() {
 		List<Room> list = new ArrayList<Room>(rooms.size());
-		for(Map.Entry<String, Room> ent : rooms.entrySet()){
+		for (Map.Entry<String, Room> ent : rooms.entrySet()) {
 			list.add(ent.getValue());
 		}
 		return list;
 	}
+
+	public static User getUserByName(String userName) {
+		return users.get(userName);
+	}
+
+	public static boolean addUser(User u) {
+		if (users.get(u.getUserName()) != null)
+			return false;
+		users.put(u.getUserName(), u);
+		return true;
+	}
+
+	public static boolean enterRoom(User u, String roomName) {
+		if (null == u || StringUtils.isBlank(u.getUserName()))
+			return false;
+		if (StringUtils.isBlank(roomName))
+			return false;
+		Room r = rooms.get(roomName);
+		if (null == r)
+			return false;
+		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+			r.setUser2Name(u.getUserName());
+			return true;
+		}
+		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser1Name())) {
+			r.setUser1Name(u.getUserName());
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean backRoom(User u, Room r) {
+		r = rooms.get(r.getRoomeName());
+		if (u.getUserName().equals(r.getUser1Name())) {
+			r.setUser1Name(null);
+		}
+		if (u.getUserName().equals(r.getUser2Name())) {
+			r.setUser2Name(null);
+		}
+		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+			rooms.remove(r.getRoomeName());
+		}
+
+		return true;
+	}
+
 }
