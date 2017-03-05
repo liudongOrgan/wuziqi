@@ -29,7 +29,7 @@
 	</filter>
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
-		<url-pattern>*.do</url-pattern>
+		<url-pattern>/</url-pattern>
 	</filter-mapping>
 
 
@@ -49,11 +49,8 @@
 			解析 第二种：/ ： 访问所有资源都由 DispatcherServlet 解析，对于html、css、js、image等静态资源，需要配置不让 
 			DispatcherServlet 解析 第三种：/* ： 注意这种方式错误，因为使用这种配置方式，最终咬转发到一个jsp页面时，仍然会由 DispatcherServlet 
 			解析 jsp 地址， 不能根据jsp页面找到处理的handler，会报错。 -->
-		<url-pattern>*.do</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
+ 
 </web-app>

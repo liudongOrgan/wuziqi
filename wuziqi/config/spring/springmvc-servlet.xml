@@ -9,6 +9,9 @@
 
 	<!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 稍后会创建该包：webmvct.cmd -->
 	<context:component-scan base-package="com.liudong.controller" />
+
+
+
 	<mvc:annotation-driven></mvc:annotation-driven>
 	<!-- 定义Spring MVC 的模板文件 -->
 	<bean id="viewResolver"
@@ -16,5 +19,29 @@
 		<property name="prefix" value="/WEB-INF/view/" />              <!-- 模板的路径 -->
 		<property name="suffix" value=".jsp" />                <!-- 模板文件的后缀 -->
 	</bean>
+	<mvc:resources mapping="/static/**" location="/static/" />
 
+	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
+	<bean id="mappingJacksonHttpMessageConverter"
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+				<value>text/plain;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+	</bean>
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
 </beans>  

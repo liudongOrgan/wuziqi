@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
 	<title>五子棋</title>
 	<style type="text/css">
@@ -40,6 +40,7 @@
 	</style>
 </head>
 <body>
+
 <canvas class="text">PK</canvas>
 <div class="gobang">
  	<canvas id="can" width="640" height="640" style="position:absolute;z-index:1;">
@@ -48,6 +49,17 @@
 	<img id="hoverImg" src="/static/picture/hover.png" style="position:absolute;" />
 </div>
 <script>
+	function playSound(){
+		var audio = '<audio id="bgMusic" src="/static/sound/sound.mp3" style="display:none;" autoplay="autoplay"></audio>';
+		$("audio").each(function(){
+			$(this).remove();
+		});
+		$("body").append(audio);
+		var bgMusic = document.getElementById("bgMusic");
+		bgMusic.play();
+	}
+
+
 	var text = document.getElementsByClassName('text');
 
 
@@ -145,7 +157,7 @@
 			hover(this, e);
 			return;
 		}
-
+		playSound();
 
 		if (maps[row][col] === 0) {
 			if (isBlack) {
