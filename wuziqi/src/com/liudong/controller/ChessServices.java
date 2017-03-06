@@ -42,21 +42,30 @@ public class ChessServices {
 			if (false == board.isUser2Ready())
 				board.setUser2Ready(true);
 		}
-		if (true == board.isUser1Ready() && true == board.isUser2Ready()) {
-			JsonResult<Chess> j = new JsonResult<Chess>();
-			Chess c = new Chess();
-			c.setNextUserName(r.getUser1Name());
-			if (board.getStatus() == 2 && StringUtils.isNotBlank(board.getNextChessUserName())) {
-				c.setNextUserName(board.getNextChessUserName());
-			}
-			j.setStatus("chess");
-			j.setContent(c);
-			TextMessage message = new TextMessage(JSON.toJSONString(j));
-			r.setStatus(2);
-			handler.sendMessageToRoom(message, r);
+		JsonResult<Chess> j = new JsonResult<Chess>();
+		Chess c = new Chess();
+		c.setNextUserName(r.getUser1Name());
+		if (board.getStatus() == 2 && StringUtils.isNotBlank(board.getNextChessUserName())) {
+			c.setNextUserName(board.getNextChessUserName());
 		}
+		j.setStatus("connected-one");
+		if (true == board.isUser1Ready() && true == board.isUser2Ready()) {
+			j.setStatus("connected");
+			c.setOpUserName(r.getUser1Name() + "," + r.getUser2Name());
+		}
+		j.setContent(c);
+		TextMessage message = new TextMessage(JSON.toJSONString(j));
+		r.setStatus(2);
+		handler.sendMessageToRoom(message, r);
 	}
 
+	/**
+	 * 落子
+	 * 
+	 * @param session
+	 * @param handler
+	 * @param chess
+	 */
 	public void chess(WebSocketSession session, SystemWebSocketHandler handler, Chess chess) {
 		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
@@ -89,6 +98,14 @@ public class ChessServices {
 			return;
 		// Cache.backRoom(u, r);
 		// sess.removeAttribute(Key.USER_SESSION_ROOM_KEY);
+	}
+
+	public void backRoom(Room r) {
+		JsonResult<Chess> j = new JsonResult<Chess>();
+		j.setStatus("exit");
+		TextMessage message = new TextMessage(JSON.toJSONString(j));
+		SystemWebSocketHandler.sendMessageToUser(r.getUser1Name(), message);
+		SystemWebSocketHandler.sendMessageToUser(r.getUser2Name(), message);
 	}
 
 }

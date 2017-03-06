@@ -115,7 +115,9 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	 * @param userName
 	 * @param message
 	 */
-	public void sendMessageToUser(String userName, TextMessage message) {
+	public static void sendMessageToUser(String userName, TextMessage message) {
+		if (StringUtils.isBlank(userName))
+			return;
 		WebSocketSession user = sessions.get(userName);
 		if (user.getAttributes().get(Key.WEBSOCKET_USERNAME).equals(userName)) {
 			try {

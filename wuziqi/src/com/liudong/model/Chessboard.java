@@ -34,6 +34,9 @@ public class Chessboard {
 		if (board[c.getX()][c.getY()] != Color.NONE.getVal()) {
 			return false;
 		}
+		if (false == user1Ready || false == user2Ready) {
+			return false;
+		}
 		if (StringUtils.isNotBlank(nextChessUserName) && !c.getOpUserName().equals(nextChessUserName)) {
 			return false;
 		}
@@ -83,6 +86,8 @@ public class Chessboard {
 		if (userName.equals(room.getUser1Name()) && 0 == back % 10) {
 			back += 1;
 		}
+		if (back > 10)
+			over = true;
 	}
 
 	// 设置用户2 退出游戏
@@ -90,6 +95,8 @@ public class Chessboard {
 		if (userName.equals(room.getUser2Name()) && back < 10) {
 			back += 10;
 		}
+		if (back > 10)
+			over = true;
 	}
 
 	// 判断是否有人赢了

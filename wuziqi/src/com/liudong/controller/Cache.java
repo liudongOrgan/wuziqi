@@ -57,7 +57,7 @@ public class Cache {
 		if (StringUtils.isBlank(roomName))
 			return false;
 		Room r = rooms.get(roomName);
-		if (null == r)
+		if (null == r || 3 == r.getStatus())
 			return false;
 		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
 			r.setUser2Name(u.getUserName());
@@ -81,9 +81,11 @@ public class Cache {
 		r = rooms.get(r.getRoomeName());
 		if (u.getUserName().equals(r.getUser1Name())) {
 			r.setUser1Name(null);
+			r.setStatus(3);
 		}
 		if (u.getUserName().equals(r.getUser2Name())) {
 			r.setUser2Name(null);
+			r.setStatus(3);
 		}
 		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());

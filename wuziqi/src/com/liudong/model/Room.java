@@ -3,7 +3,7 @@ package com.liudong.model;
 import java.util.Date;
 
 public class Room {
-	private Integer status = 0;// 0默认 待加入 1 等待开始 2 进行中
+	private Integer status = 0;// 0默认 待加入 1 等待开始 2 进行中 3结束待销毁
 	private String user1Name;
 	private String user2Name;
 	private String roomeName;

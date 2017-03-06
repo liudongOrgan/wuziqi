@@ -6,6 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +21,8 @@ import com.liudong.model.User;
 @Controller
 @RequestMapping("/")
 public class Index {
+	@Autowired
+	ChessServices chessService;
 
 	@RequestMapping("index")
 	public String index() {
@@ -158,7 +161,9 @@ public class Index {
 		if (null == r)
 			return null;
 		Cache.backRoom(u, r);
+		ChessboardCache.userExit(u, r);
 		httpSession.removeAttribute(Key.USER_SESSION_ROOM_KEY);
+		chessService.backRoom(r);
 		return j;
 	}
 
@@ -171,8 +176,9 @@ public class Index {
 		if (null == r)
 			return j;
 
-		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isNotBlank(r.getUser2Name()))
-			j.setStatus("success");
+		// if (StringUtils.isNotBlank(r.getUser1Name()) &&
+		// StringUtils.isNotBlank(r.getUser2Name()))
+		j.setStatus("success");
 
 		return j;
 	}

@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.liudong.model.Chessboard;
 import com.liudong.model.Room;
+import com.liudong.model.User;
 
 public class ChessboardCache {
 	private static Map<String, Chessboard> boards = new HashMap<String, Chessboard>();
@@ -39,6 +40,24 @@ public class ChessboardCache {
 			return false;
 		boards.remove(r.getRoomeName());
 		return true;
+	}
+
+	public static boolean userExit(User u, Room r) {
+		Chessboard board = getBoardByRoom(r);
+		if (null == board)
+			return false;
+		if (u.getUserName().equals(r.getUser1Name())) {
+			board.setUser1Ready(false);
+			board.setUser1Over(u.getUserName());
+		}
+		if (u.getUserName().equals(r.getUser2Name())) {
+			board.setUser2Ready(false);
+			board.setUser2Over(u.getUserName());
+		}
+		if (true == board.isOver()) {
+			removeBoardByRoom(r);
+		}
+		return false;
 	}
 
 }

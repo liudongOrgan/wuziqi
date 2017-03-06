@@ -76,6 +76,7 @@
 				loadCreateRoom();
 			} else {
 				alert("进入房间失败！");
+				window.location.reload();
 			}
 		};
 		sendPost(url, data, callback);

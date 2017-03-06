@@ -157,7 +157,7 @@
 			hover(this, e);
 			return;
 		}
-		if(user['userName'] != boardInfo['nextUsesrName']){ // 不该当前玩家下棋
+		if(user['userName'] != boardInfo['nextUsesrName'] || true != boardInfo['ready']){ // 不该当前玩家下棋
 			return;
 		}
 		sendChessInfo(row, col);
@@ -325,13 +325,25 @@ function connectServer(){
 }
 function messageHandler(data){
 	data = JSON.parse(data);
+	if('exit' == data['status']){
+		$(".info .chessStatus").html("有玩家退出！");
+		boardInfo['ready'] = false;
+		alert("有玩家退出！");
+		return;
+	}
 	initInfo(data);
 	var content = data['content'];
 	boardInfo['nextUsesrName'] = content['nextUserName'];
-	var c = content['x']>0 && content['x']<17;
-	c = c && content['y']>0 && content['y'] < 17;
-	if(true == c){
-		chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
+	if('chess' == data['status'] || 'over' == data['status']){
+		var c = content['x']>-1 && content['x']<16;
+		c = c && content['y']>-1 && content['y'] < 16;
+		if(true == c){
+			chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
+		}
+	}
+	if('over' == data['status']){
+		$(".info .chessStatus").html("胜负已分，游戏结束！");
+		boardInfo['ready'] = false;
 	}
 }
 $(function(){
@@ -351,7 +363,18 @@ function initInfo(data){
 		$(".info .rivalName").html(room['user1Name']);
 	}
 	var content = data['content'];
-	if(user['userName'] == content['nextUserName']){
+	if('connected' == data['status']){
+		boardInfo['ready'] = true;
+		var opname = content['opUserName'];
+		if(user['userName'] == opname.split(",")[0]){
+			$(".info .rivalName").html(opname.split(",")[1]);
+		} else {
+			$(".info .rivalName").html(opname.split(",")[0]);
+		}
+	}
+	if( 'connected-one' == data['status']){
+		$(".info .chessStatus").html("等待 玩家 加入");
+	} else if(user['userName'] == content['nextUserName']){
 		$(".info .chessStatus").html("等待 自己 下棋");
 	} else {
 		$(".info .chessStatus").html("等待 对手 下棋");
