@@ -4,10 +4,12 @@ public class Chessboard {
 	private static final int BOARD_SIZE = 17;
 	private Room room = null;
 	private int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
-	private boolean user1Ready = false;
-	private boolean user2Ready = false;
-	private short over = 0;// 1表示 玩家1 退出 ，10表示 玩家2退出 ，11表示玩家1 和 玩家2 都退出
+	private volatile boolean user1Ready = false;
+	private volatile boolean user2Ready = false;
+	private short back = 0;// 1表示 玩家1 退出 ，10表示 玩家2退出 ，11表示玩家1 和 玩家2 都退出
 	private int[][] winPath = new int[5][2]; // 赢棋路径
+	private boolean over = false; // 是否结束
+	private Color winColor = null; // 黑色表示玩家1 白色玩家2
 
 	public Chessboard(Room r) {
 		this.room = r;
@@ -19,6 +21,8 @@ public class Chessboard {
 	 * @param c
 	 */
 	public synchronized boolean chess(Chess c) {
+		if (true == over)
+			return false;
 		if (board[c.getX()][c.getY()] != Color.NONE.getVal()) {
 			return false;
 		}
@@ -41,7 +45,7 @@ public class Chessboard {
 	}
 
 	// 设置用户1 准备好了
-	public void setUser1Ready(boolean user1Ready) {
+	public synchronized void setUser1Ready(boolean user1Ready) {
 		this.user1Ready = user1Ready;
 	}
 
@@ -51,26 +55,28 @@ public class Chessboard {
 	}
 
 	// 设置用户2 准备好了
-	public void setUser2Ready(boolean user2Ready) {
+	public synchronized void setUser2Ready(boolean user2Ready) {
 		this.user2Ready = user2Ready;
 	}
 
 	// 设置用户1 退出游戏
 	public void setUser1Over(String userName) {
-		if (userName.equals(room.getUser1Name()) && 0 == over % 10) {
-			over += 1;
+		if (userName.equals(room.getUser1Name()) && 0 == back % 10) {
+			back += 1;
 		}
 	}
 
 	// 设置用户2 退出游戏
 	public void setUser2Over(String userName) {
-		if (userName.equals(room.getUser2Name()) && over < 10) {
-			over += 10;
+		if (userName.equals(room.getUser2Name()) && back < 10) {
+			back += 10;
 		}
 	}
 
 	// 判断是否有人赢了
 	public Color checkWin() {
+		if (true == over)
+			return null;
 		int[][][] status = new int[17][17][4];// 左，左上，上，右上
 		for (int i = 2; i < BOARD_SIZE; i++) {
 			if (board[1][i] != Color.NONE.getVal() && board[1][i] == board[1][i - 1]) {
@@ -113,12 +119,21 @@ public class Chessboard {
 						x += index[k][0];
 						y += index[k][1];
 					}
-					return Color.getByVal(board[i][j]);
+					over = true;
+					winColor = Color.getByVal(board[i][j]);
+					return winColor;
 				}
 			}
 		}
 
 		return Color.NONE;
+	}
+
+	public Result getResult() {
+		Result res = new Result();
+		res.setWinPath(winPath);
+		res.setWinUser(winColor.getVal() == Color.BLACK.getVal() ? room.getUser1Name() : room.getUser2Name());
+		return res;
 	}
 
 }
