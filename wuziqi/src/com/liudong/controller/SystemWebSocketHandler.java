@@ -14,6 +14,9 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.liudong.model.Chess;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
 
@@ -40,15 +43,30 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 				}
 			}
 			sessions.put(userName, session);
-			chessService.connected(sessionold, this);
+			chessService.connected(session, this);
 		}
 	}
 
 	// 接收文本消息，并发送出去
-	@Override
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-
-		// sendMessageToUsers();
+		Object obj = message.getPayload();
+		Chess chess = new Chess();
+		try {
+			JSONObject json = JSON.parseObject(obj.toString());
+			int x = json.getIntValue("x");
+			int y = json.getIntValue("y");
+			boolean validate = x > -1 && x < 16;
+			validate = validate && y > -1 && y < 16;
+			if (false == validate) {
+				throw new Exception("接收到坐标错误!");
+			}
+			chess.setX(x);
+			chess.setY(y);
+		} catch (Exception e) {
+			logger.error("解析消息出错！", e);
+			return;
+		}
+		chessService.chess(session, this, chess);
 	}
 
 	// 抛出异常时处理
@@ -58,6 +76,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 			session.close();
 		}
 		logger.debug("websocket connection closed......");
+		chessService.close(session, this);
 		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
 		if (StringUtils.isNotBlank(userName)) {
 			sessions.remove(userName);
@@ -68,6 +87,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		logger.debug("websocket connection closed......");
+		chessService.close(session, this);
 		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
 		if (StringUtils.isNotBlank(userName)) {
 			sessions.remove(userName);

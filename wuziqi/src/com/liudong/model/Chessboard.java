@@ -1,5 +1,7 @@
 package com.liudong.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Chessboard {
 	private static final int BOARD_SIZE = 17;
 	private Room room = null;
@@ -10,9 +12,15 @@ public class Chessboard {
 	private int[][] winPath = new int[5][2]; // 赢棋路径
 	private boolean over = false; // 是否结束
 	private Color winColor = null; // 黑色表示玩家1 白色玩家2
+	private String nextChessUserName = "";
+	private short status = 0; // 0初始状态 1等待玩家状态 2 游戏中状态 3游戏结束状态
 
 	public Chessboard(Room r) {
 		this.room = r;
+	}
+
+	public short getStatus() {
+		return status;
 	}
 
 	/**
@@ -26,15 +34,20 @@ public class Chessboard {
 		if (board[c.getX()][c.getY()] != Color.NONE.getVal()) {
 			return false;
 		}
+		if (StringUtils.isNotBlank(nextChessUserName) && !c.getOpUserName().equals(nextChessUserName)) {
+			return false;
+		}
 		if (c.getOpUserName().equals(room.getUser1Name())) {
 			board[c.getX()][c.getY()] = Color.BLACK.getVal();
 			c.setColor(Color.BLACK);
 			c.setNextUserName(room.getUser2Name());
+			this.nextChessUserName = room.getUser2Name();
 		}
 		if (c.getOpUserName().equals(room.getUser2Name())) {
 			board[c.getX()][c.getY()] = Color.WHITE.getVal();
 			c.setColor(Color.WHITE);
 			c.setNextUserName(room.getUser1Name());
+			this.nextChessUserName = room.getUser1Name();
 		}
 		return true;
 	}
@@ -47,6 +60,9 @@ public class Chessboard {
 	// 设置用户1 准备好了
 	public synchronized void setUser1Ready(boolean user1Ready) {
 		this.user1Ready = user1Ready;
+		if (user1Ready == user2Ready && true == user2Ready) {
+			status = 2;
+		}
 	}
 
 	// 用户2 是否准备好了
@@ -57,6 +73,9 @@ public class Chessboard {
 	// 设置用户2 准备好了
 	public synchronized void setUser2Ready(boolean user2Ready) {
 		this.user2Ready = user2Ready;
+		if (user1Ready == user2Ready && true == user2Ready) {
+			status = 2;
+		}
 	}
 
 	// 设置用户1 退出游戏
@@ -99,8 +118,9 @@ public class Chessboard {
 					int y = j + index[k][1];
 					if (board[i][j] != Color.NONE.getVal() && board[i][j] == board[x][y]) {
 						status[i][j][k] = status[x][y][k] + 1;
-					} else {
-						status[i][j][k] = 0;
+					}
+					if (board[i][j] != Color.NONE.getVal()) {
+						status[i][j][k] = 1;
 					}
 				}
 			}
@@ -120,6 +140,7 @@ public class Chessboard {
 						y += index[k][1];
 					}
 					over = true;
+					this.status = 3;
 					winColor = Color.getByVal(board[i][j]);
 					return winColor;
 				}
@@ -129,11 +150,19 @@ public class Chessboard {
 		return Color.NONE;
 	}
 
+	public boolean isOver() {
+		return over;
+	}
+
 	public Result getResult() {
 		Result res = new Result();
 		res.setWinPath(winPath);
 		res.setWinUser(winColor.getVal() == Color.BLACK.getVal() ? room.getUser1Name() : room.getUser2Name());
 		return res;
+	}
+
+	public String getNextChessUserName() {
+		return nextChessUserName;
 	}
 
 }

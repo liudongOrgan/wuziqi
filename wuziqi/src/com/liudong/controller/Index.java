@@ -9,7 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
 import com.liudong.model.JsonResult;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
@@ -25,8 +27,12 @@ public class Index {
 	}
 
 	@RequestMapping("wuziqi")
-	public String index2() {
-		return "wuziqi";
+	public ModelAndView index2(HttpSession httpSession) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("wuziqi");
+		mv.addObject("user", JSON.toJSONString(httpSession.getAttribute(Key.USER_SESSION_KEY)));
+		mv.addObject("room", JSON.toJSONString(httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY)));
+		return mv;
 	}
 
 	@RequestMapping("createroom")
@@ -39,12 +45,13 @@ public class Index {
 		}
 		if (null != httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY)) {
 			j.setStatus("created");
-			// return j;
+			return j;
 		}
 
 		Room r = new Room();
 		r.setRoomeName(roomName);
 		r.setCreateDate(new Date());
+		r.setStatus(1);
 		Object cur = httpSession.getAttribute(Key.USER_SESSION_KEY);
 		r.setUser1Name(null == cur ? "房间名称" : ((User) cur).getUserName());
 		if (true == Cache.addRoom(r)) {
@@ -74,6 +81,13 @@ public class Index {
 		JsonResult<Room> j = new JsonResult<Room>();
 		j.setStatus("success");
 		Object r = httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
+		if (null != r) {
+			Room room = (Room) r;
+			if (StringUtils.isBlank(room.getUser1Name()) && StringUtils.isBlank(room.getUser2Name())) {
+				httpSession.removeAttribute(Key.USER_SESSION_ROOM_KEY);
+				r = httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
+			}
+		}
 		j.setContent(null == r ? null : (Room) r);
 		return j;
 	}
@@ -156,10 +170,10 @@ public class Index {
 		j.setStatus("error");
 		if (null == r)
 			return j;
-		
+
 		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isNotBlank(r.getUser2Name()))
 			j.setStatus("success");
-		
+
 		return j;
 	}
 

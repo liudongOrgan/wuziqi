@@ -63,7 +63,7 @@ public class Cache {
 			r.setUser2Name(u.getUserName());
 			return true;
 		}
-		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser1Name())) {
+		if (StringUtils.isNotBlank(r.getUser2Name()) && StringUtils.isBlank(r.getUser1Name())) {
 			r.setUser1Name(u.getUserName());
 			return true;
 		}

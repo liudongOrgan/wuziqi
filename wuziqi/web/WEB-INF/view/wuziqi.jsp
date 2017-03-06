@@ -111,8 +111,8 @@
 		var l = obj.offsetLeft + 20;
 		var t = obj.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l;
-		var y = e.clientY - t;
+		var x = e.clientX - l + $(document).scrollLeft();
+		var y = e.clientY - t + $(document).scrollTop();
 		var row,
 			col,
 			index = 0;
@@ -135,8 +135,8 @@
 		var l = this.offsetLeft + 20;
 		var t = this.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l;
-		var y = e.clientY - t;
+		var x = e.clientX - l + $(document).scrollLeft();
+		var y = e.clientY - t + $(document).scrollTop();
 		// alert(x);
 		var row,
 			col,
@@ -157,22 +157,38 @@
 			hover(this, e);
 			return;
 		}
+		if(user['userName'] != boardInfo['nextUsesrName']){ // 不该当前玩家下棋
+			return;
+		}
+		sendChessInfo(row, col);
+	}
+	
+	function sendChessInfo(x, y){
+		if(null == websocket || websocket.readyState != WebSocket.OPEN){
+			alert('与服务器连接出错！');
+			window.location.reload();
+			return;
+		}
+		var data = {"x" : x,"y" : y};
+		websocket.send(JSON.stringify(data));
+	}
+	
+	function chessed(x, y, isBlack){
 		playSound();
 
-		if (maps[row][col] === 0) {
+		if (maps[x][y] === 0) {
 			if (isBlack) {
-				ctx.drawImage(black, col * 40, row * 40); //下黑子
-				isBlack = false;
-				maps[row][col] = 2; //黑子为2
-				iswin(2, row, col);
+				ctx.drawImage(black, y * 40, x * 40); //下黑子
+				maps[x][y] = 2; //黑子为2
+				iswin(2, x, y);
 			} else {
-				ctx.drawImage(white, col * 40, row * 40);
-				isBlack = true;
-				maps[row][col] = 1; //白子为1
-				iswin(1, row, col);
+				ctx.drawImage(white, y * 40, x * 40);
+				maps[x][y] = 1; //白子为1
+				iswin(1, x, y);
 			}
 		}
 	}
+	
 	function iswin(t, row, col) {
 		var orgrow,
 			orgcol,
@@ -271,30 +287,111 @@
 		}
 	}
 </script>
+
+
+<div class="info">
+	自己昵称：<span class="curName"></span><br>
+	对手大名：<span class="rivalName"></span><br>
+	当前状态：<span class="chessStatus"></span><br>
+	所持棋子：<img class="black" src="/static/picture/black.png"/><img class="white" src="/static/picture/white.png"/><br>
+	<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;"/> 
+</div>
 </body>
 
 <script>
-function test(){
+var user = JSON.parse('${user}');
+var room = JSON.parse('${room}');
+var boardInfo = {};
 var host = window.location.host;
 var websocket;
-if ('WebSocket' in window) {
-    websocket = new WebSocket("ws://" + host + "/ws" );
-} else if ('MozWebSocket' in window) {
-    websocket = new MozWebSocket("ws://" + host + "/ws");
+function connectServer(){
+	if ('WebSocket' in window) {
+	    websocket = new WebSocket("ws://" + host + "/ws" );
+	} else if ('MozWebSocket' in window) {
+	    websocket = new MozWebSocket("ws://" + host + "/ws");
+	}
+	websocket.onopen = function(evnt) {
+	    console.log("websocket连接上");
+	};
+	websocket.onmessage = function(evnt) {
+	    messageHandler(evnt.data);
+	};
+	websocket.onerror = function(evnt) {
+	    console.log("websocket错误");
+	};
+	websocket.onclose = function(evnt) {
+	    console.log("websocket关闭");
+	}
 }
-websocket.onopen = function(evnt) {
-    console.log("websocket连接上");
-};
-websocket.onmessage = function(evnt) {
-    messageHandler(evnt.data);
-};
-websocket.onerror = function(evnt) {
-    console.log("websocket错误");
-};
-websocket.onclose = function(evnt) {
-    console.log("websocket关闭");
+function messageHandler(data){
+	data = JSON.parse(data);
+	initInfo(data);
+	var content = data['content'];
+	boardInfo['nextUsesrName'] = content['nextUserName'];
+	var c = content['x']>0 && content['x']<17;
+	c = c && content['y']>0 && content['y'] < 17;
+	if(true == c){
+		chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
+	}
 }
+$(function(){
+	connectServer();
+});
+
+function initInfo(data){
+	$(".info .curName").html(user['userName']);
+	if(user['userName'] == room['user1Name']){
+		$(".info .white").hide();
+	} else{
+		$(".info .black").hide();
+	}
+	if(user['userName'] == room['user1Name']){
+		$(".info .rivalName").html(room['user2Name']);
+	} else{
+		$(".info .rivalName").html(room['user1Name']);
+	}
+	var content = data['content'];
+	if(user['userName'] == content['nextUserName']){
+		$(".info .chessStatus").html("等待 自己 下棋");
+	} else {
+		$(".info .chessStatus").html("等待 对手 下棋");
+	}
 }
+
+function exitRoom(){
+		var roomname = room['roomeName'];
+		var data = {
+			"roomname" : roomname
+		};
+		var url = "backroom";
+		var callback = function(data) {
+			if ("success" == data.status) {
+				alert("退出房间成功！");
+				window.location.href = "/";
+			} else {
+				alert("退出房间失败！");
+			}
+		};
+		sendPost(url, data, callback);
+}
+	function sendPost(url, data, callback) {
+		$.ajax({
+			url : url,
+			type : 'POST', //GET
+			async : false, //或false,是否异步
+			data : data,
+			//dataType : 'json', //返回的数据格式：json/xml/html/script/jsonp/text
+			success : function(data, textStatus, jqXHR) {
+				callback(data);
+			},
+			error : function(xhr, textStatus) {
+				alert("通信出现错误！");
+				console.log('错误');
+				console.log(xhr);
+				console.log(textStatus);
+			}
+		});
+	}
 </script>
 
 
