@@ -26,13 +26,12 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 		if (request instanceof ServletServerHttpRequest) {
 			ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
 			HttpSession session = servletRequest.getServletRequest().getSession(false);
-			HttpSession s = servletRequest.getServletRequest().getSession();
 			if (session != null) {
 				// 使用userName区分WebSocketHandler，以便定向发送消息
 				User u = (User) session.getAttribute(Key.USER_SESSION_KEY);
 				if (null == u) {
 					logger.error("用户未设置昵称进入！", new Exception());
-					return true;
+					return false;
 				}
 				attributes.put(Key.WEBSOCKET_USERNAME, u.getUserName());
 				attributes.put(Key.WEBSOCKET_HTTP_SESS, session);
