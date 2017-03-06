@@ -92,6 +92,8 @@ public class ChessServices {
 	// 退出
 	public void close(WebSocketSession session, SystemWebSocketHandler hand) {
 		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
+		if (null == sess)
+			return;
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)

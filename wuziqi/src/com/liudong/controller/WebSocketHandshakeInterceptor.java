@@ -22,9 +22,11 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
 			Map<String, Object> attributes) throws Exception {
+		System.out.println(request.getClass().getName());
 		if (request instanceof ServletServerHttpRequest) {
 			ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
 			HttpSession session = servletRequest.getServletRequest().getSession(false);
+			HttpSession s = servletRequest.getServletRequest().getSession();
 			if (session != null) {
 				// 使用userName区分WebSocketHandler，以便定向发送消息
 				User u = (User) session.getAttribute(Key.USER_SESSION_KEY);

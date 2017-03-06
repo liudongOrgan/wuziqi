@@ -123,11 +123,11 @@ public class Chessboard {
 				for (int k = 0; k < indexLen; k++) {
 					int x = i + index[k][0];
 					int y = j + index[k][1];
-					if (board[i][j] != Color.NONE.getVal() && board[i][j] == board[x][y]) {
-						status[i][j][k] = status[x][y][k] + 1;
-					}
 					if (board[i][j] != Color.NONE.getVal()) {
 						status[i][j][k] = 1;
+					}
+					if (board[i][j] != Color.NONE.getVal() && board[i][j] == board[x][y]) {
+						status[i][j][k] = status[x][y][k] + 1;
 					}
 				}
 			}

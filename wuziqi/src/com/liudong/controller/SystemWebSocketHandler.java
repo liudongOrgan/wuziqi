@@ -31,8 +31,8 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	// 连接建立后处理
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-		logger.debug("connect to the websocket success......");
 		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
+		logger.debug("connect to the websocket success......  " + userName);
 		if (StringUtils.isNotBlank(userName)) {
 			WebSocketSession sessionold = sessions.get(userName);
 			if (null != sessionold) {
@@ -119,7 +119,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 		if (StringUtils.isBlank(userName))
 			return;
 		WebSocketSession user = sessions.get(userName);
-		if (user.getAttributes().get(Key.WEBSOCKET_USERNAME).equals(userName)) {
+		if (null != user && user.getAttributes().get(Key.WEBSOCKET_USERNAME).equals(userName)) {
 			try {
 				if (user.isOpen()) {
 					user.sendMessage(message);

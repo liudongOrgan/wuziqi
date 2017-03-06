@@ -106,13 +106,36 @@
 		x : 0,
 		y : 0
 	};
+	function IsPC() {
+	    var userAgentInfo = navigator.userAgent;
+	    var Agents = ["Android", "iPhone",
+	                "SymbianOS", "Windows Phone",
+	                "iPad", "iPod"];
+	    var flag = true;
+	    for (var v = 0; v < Agents.length; v++) {
+	        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+	            flag = false;
+	            break;
+	        }
+	    }
+	    var agent = "safari";
+	    if(userAgentInfo.toLowerCase().indexOf(agent)<0 || true == flag){
+	    	return true;
+	    } else {
+	    	return false;
+	    }
+	}
 	function hover(obj, e) {
 		//获取棋盘偏移量
 		var l = obj.offsetLeft + 20;
 		var t = obj.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l + $(document).scrollLeft();
-		var y = e.clientY - t + $(document).scrollTop();
+		var x = e.clientX - l ;
+		var y = e.clientY - t ;
+		if(IsPC()){
+			x += $(document).scrollLeft();
+			y += $(document).scrollTop()
+		}
 		var row,
 			col,
 			index = 0;
@@ -135,8 +158,12 @@
 		var l = this.offsetLeft + 20;
 		var t = this.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l + $(document).scrollLeft();
-		var y = e.clientY - t + $(document).scrollTop();
+		var x = e.clientX - l  ;
+		var y = e.clientY - t  ;
+		if(IsPC()){
+			x += $(document).scrollLeft();
+			y += $(document).scrollTop()
+		}
 		// alert(x);
 		var row,
 			col,
