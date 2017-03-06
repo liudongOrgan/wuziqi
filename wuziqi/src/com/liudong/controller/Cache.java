@@ -46,6 +46,11 @@ public class Cache {
 		return true;
 	}
 
+	public static boolean removeUser(User u) {
+		users.remove(u.getUserName());
+		return true;
+	}
+
 	public static boolean enterRoom(User u, String roomName) {
 		if (null == u || StringUtils.isBlank(u.getUserName()))
 			return false;
@@ -65,6 +70,13 @@ public class Cache {
 		return false;
 	}
 
+	/**
+	 * 离开房间
+	 * 
+	 * @param u
+	 * @param r
+	 * @return
+	 */
 	public static boolean backRoom(User u, Room r) {
 		r = rooms.get(r.getRoomeName());
 		if (u.getUserName().equals(r.getUser1Name())) {
@@ -75,6 +87,18 @@ public class Cache {
 		}
 		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());
+			ChessboardCache.removeBoardByRoom(r);
+		}
+
+		return true;
+	}
+
+	public static boolean exitSys(User u, Room r) {
+		if (null != r) {
+			backRoom(u, r);
+		}
+		if (null != u) {
+			removeUser(u);
 		}
 
 		return true;

@@ -11,4 +11,16 @@ public enum Color {
 	public int getVal() {
 		return val;
 	}
+
+	public static Color getByVal(int v) {
+		switch (v) {
+		case 0:
+			return NONE;
+		case 1:
+			return BLACK;
+		case 2:
+			return WHITE;
+		}
+		return null;
+	}
 }

@@ -5,6 +5,7 @@ public class Chess {
 	private int x;
 	private int y;
 	private Color color;
+	private String nextUserName;
 
 	public String getOpUserName() {
 		return opUserName;
@@ -36,6 +37,14 @@ public class Chess {
 
 	public void setColor(Color color) {
 		this.color = color;
+	}
+
+	public String getNextUserName() {
+		return nextUserName;
+	}
+
+	public void setNextUserName(String nextUserName) {
+		this.nextUserName = nextUserName;
 	}
 
 }
