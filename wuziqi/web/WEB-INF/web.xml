@@ -18,6 +18,9 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	<listener>  
+        <listener-class>com.liudong.listener.SessionListener</listener-class>          
+	</listener>  
 	<!-- 字符集过滤器 -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
@@ -51,6 +54,9 @@
 			解析 jsp 地址， 不能根据jsp页面找到处理的handler，会报错。 -->
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-
+	
+	<session-config>
+      <session-timeout>1</session-timeout>
+	</session-config>
  
 </web-app>
