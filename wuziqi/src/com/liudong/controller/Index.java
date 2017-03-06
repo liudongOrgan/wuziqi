@@ -153,11 +153,13 @@ public class Index {
 	public JsonResult<Room> checkstart(HttpSession httpSession) {
 		JsonResult<Room> j = new JsonResult<Room>();
 		Room r = (Room) httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
-		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isNotBlank(r.getUser2Name())) {
+		j.setStatus("error");
+		if (null == r)
+			return j;
+		
+		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isNotBlank(r.getUser2Name()))
 			j.setStatus("success");
-		} else {
-			j.setStatus("error");
-		}
+		
 		return j;
 	}
 
