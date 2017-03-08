@@ -9,6 +9,7 @@
 
 	<!-- 对包中的所有类进行扫描，以完成Bean创建和自动依赖注入的功能 稍后会创建该包：webmvct.cmd -->
 	<context:component-scan base-package="com.liudong.controller" />
+	<context:component-scan base-package="com.liudong.proxy" />
 
 
 
@@ -32,8 +33,7 @@
 		</property>
 	</bean>
 
-	<bean
-		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 	</bean>
 	<bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">

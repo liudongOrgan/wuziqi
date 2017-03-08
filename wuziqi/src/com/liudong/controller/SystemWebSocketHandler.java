@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.liudong.model.Chess;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
+import com.liudong.proxy.ChessBoardProxy;
 
 public class SystemWebSocketHandler implements WebSocketHandler {
 
@@ -27,6 +28,8 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	private static final Map<String, WebSocketSession> sessions = new HashMap<String, WebSocketSession>();
 	@Autowired
 	ChessServices chessService;
+	@Autowired
+	ChessBoardProxy chessBoard;
 
 	// 连接建立后处理
 	@Override
@@ -43,7 +46,10 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 				}
 			}
 			sessions.put(userName, session);
-			chessService.connected(session, this);
+			// chessService.connected(session, this);
+			JSONObject json = new JSONObject();
+			json.put("url", "testChess");
+			chessBoard.doService(session, this, json);
 		}
 	}
 
@@ -53,6 +59,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 		Chess chess = new Chess();
 		try {
 			JSONObject json = JSON.parseObject(obj.toString());
+			chessBoard.doService(session, this, json);
 			int x = json.getIntValue("x");
 			int y = json.getIntValue("y");
 			boolean validate = x > -1 && x < 16;

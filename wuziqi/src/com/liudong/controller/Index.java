@@ -161,7 +161,6 @@ public class Index {
 		if (null == r)
 			return null;
 		Cache.backRoom(u, r);
-		ChessboardCache.userExit(u, r);
 		httpSession.removeAttribute(Key.USER_SESSION_ROOM_KEY);
 		chessService.backRoom(r);
 		return j;

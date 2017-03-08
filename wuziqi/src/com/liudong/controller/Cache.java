@@ -91,7 +91,7 @@ public class Cache {
 			rooms.remove(r.getRoomeName());
 			ChessboardCache.removeBoardByRoom(r);
 		}
-
+		ChessboardCache.userExit(u, r);
 		return true;
 	}
 

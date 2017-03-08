@@ -1,6 +1,7 @@
 package com.liudong.model;
 
 public class JsonResult<T> {
+	private String url;
 	private String status;
 	private T content;
 
@@ -18,6 +19,14 @@ public class JsonResult<T> {
 
 	public void setContent(T content) {
 		this.content = content;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 }
