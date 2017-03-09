@@ -36,7 +36,6 @@ public class ChessBoardController {
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)
 			return false;
-
 		Chess chess = new Chess();
 		int x = mess.getIntValue("x");
 		int y = mess.getIntValue("y");
@@ -56,8 +55,10 @@ public class ChessBoardController {
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		j.setUrl("chess");
 		j.setStatus("chess");
-		if (true == r.isOver())
+		if (true == r.isOver()){
 			j.setStatus("over");
+			j.setUrl("over");
+		}
 		j.setContent(chess);
 		TextMessage message = new TextMessage(JSON.toJSONString(j));
 		handler.sendMessageToRoom(message, r);

@@ -9,7 +9,6 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.alibaba.fastjson.JSON;
 import com.liudong.model.Chess;
-import com.liudong.model.Chessboard;
 import com.liudong.model.JsonResult;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
@@ -43,7 +42,7 @@ public class ChessServices {
 		Chess c = new Chess();
 		c.setNextUserName(r.getUser1Name());
 		if (r.getStatus().intValue() == 2
-				&& StringUtils.isNotBlank(r.getNextChessUserName())) {
+		        && StringUtils.isNotBlank(r.getNextChessUserName())) {
 			c.setNextUserName(r.getNextChessUserName());
 		}
 		j.setStatus("connected-one");
@@ -52,6 +51,7 @@ public class ChessServices {
 			c.setOpUserName(r.getUser1Name() + "," + r.getUser2Name());
 		}
 		j.setContent(c);
+		j.setUrl("connected");
 		TextMessage message = new TextMessage(JSON.toJSONString(j));
 		r.setStatus(2);
 		handler.sendMessageToRoom(message, r);

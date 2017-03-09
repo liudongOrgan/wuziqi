@@ -47,7 +47,8 @@
  	<canvas id="can" width="640" height="640" style="position:absolute;z-index:1;">
 		您的浏览器不支持canvas
 	</canvas>
-	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;" />
+	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;display:none;" />
+	<img id="pointImg" src="${ctx }/static/picture/93-dot-red.png" style="position:absolute;z-index: 10;display:none;" />
 </div>
 <script>
 	function playSound(){
@@ -150,6 +151,19 @@
 		var top = (row - 1) * 40 + 20 + t + 2;
 		$("#hoverImg").css("top", top);
 		$("#hoverImg").css("left", left);
+		$("#hoverImg").show();
+	}
+	
+	function movePoint(x, y){
+		
+		var obj = document.getElementById("can");
+		var l = obj.offsetLeft + 20;
+		var t = obj.offsetTop + 20;
+		var left = (y - 1) * 40 + 20 + l + 12; // 左边到棋盘20px  hover图标宽36px
+		var top = (x - 1) * 40 + 20 + t + 10;
+		$("#pointImg").css("top", top);
+		$("#pointImg").css("left", left);
+		$("#pointImg").show();
 	}
 
 	//下子
@@ -214,6 +228,7 @@
 				maps[x][y] = 1; //白子为1
 				iswin(1, x, y);
 			}
+			movePoint(x, y);
 		}
 	}
 	
@@ -346,6 +361,7 @@ function connectServer(){
 	};
 	websocket.onerror = function(evnt) {
 	    console.log("websocket错误");
+	    window.location.href = "${ctx}";
 	};
 	websocket.onclose = function(evnt) {
 	    console.log("websocket关闭");
@@ -362,18 +378,29 @@ function messageHandler(data){
 	initInfo(data);
 	var content = data['content'];
 	boardInfo['nextUsesrName'] = content['nextUserName'];
-	if('chess' == data['status'] || 'over' == data['status']){
-		var c = content['x']>-1 && content['x']<16;
-		c = c && content['y']>-1 && content['y'] < 16;
-		if(true == c){
-			chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
-		}
-	}
-	if('over' == data['status']){
-		$(".info .chessStatus").html("胜负已分，游戏结束！");
-		boardInfo['ready'] = false;
+	if(callbacks[data['url']]!=null){
+		callbacks[data['url']](data);
 	}
 }
+
+var callbacks = {
+		"chess" : function (data){
+			var content = data['content'];
+			boardInfo['nextUsesrName'] = content['nextUserName'];
+			var c = content['x']>-1 && content['x']<16;
+			c = c && content['y']>-1 && content['y'] < 16;
+			if(true == c){
+				chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
+			}	
+		},
+		"over" : function(data){
+			this.chess(data);
+			$(".info .chessStatus").html("胜负已分，游戏结束！");
+			boardInfo['ready'] = false;
+		}
+}
+
+
 $(function(){
 	connectServer();
 });
@@ -418,7 +445,7 @@ function exitRoom(){
 		var callback = function(data) {
 			if ("success" == data.status) {
 				alert("退出房间成功！");
-				window.location.href = "/";
+				window.location.href = "${ctx}";
 			} else {
 				alert("退出房间失败！");
 			}
