@@ -1,9 +1,10 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<jsp:include page="target.jsp"></jsp:include>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
 <style type="text/css">
 * {
 	box-sizing: border-box;

@@ -15,7 +15,7 @@ public class Chessboard {
 	private String nextChessUserName = "";
 	private short status = 0; // 0初始状态 1等待玩家状态 2 游戏中状态 3游戏结束状态
 
-	public Chessboard(Room r) {
+	protected Chessboard(Room r) {
 		this.room = r;
 	}
 
@@ -34,10 +34,11 @@ public class Chessboard {
 		if (board[c.getX()][c.getY()] != Color.NONE.getVal()) {
 			return false;
 		}
-		if (false == user1Ready || false == user2Ready) {
+		if (false == room.isUser1Ready() || false == room.isUser2Ready()) {
 			return false;
 		}
-		if (StringUtils.isNotBlank(nextChessUserName) && !c.getOpUserName().equals(nextChessUserName)) {
+		if (StringUtils.isNotBlank(room.getNextChessUserName())
+				&& !c.getOpUserName().equals(room.getNextChessUserName())) {
 			return false;
 		}
 		if (c.getOpUserName().equals(room.getUser1Name())) {
@@ -105,12 +106,14 @@ public class Chessboard {
 			return null;
 		int[][][] status = new int[17][17][4];// 左，左上，上，右上
 		for (int i = 2; i < BOARD_SIZE; i++) {
-			if (board[1][i] != Color.NONE.getVal() && board[1][i] == board[1][i - 1]) {
+			if (board[1][i] != Color.NONE.getVal()
+					&& board[1][i] == board[1][i - 1]) {
 				status[1][i][0] = status[1][i - 1][0] + 1;
 			} else {
 				status[1][i][0] = 0;
 			}
-			if (board[i][1] != Color.NONE.getVal() && board[i][1] == board[i - 1][1]) {
+			if (board[i][1] != Color.NONE.getVal()
+					&& board[i][1] == board[i - 1][1]) {
 				status[i][1][2] = status[i - 1][1][2] + 1;
 			} else {
 				status[i][1][2] = 0;
@@ -126,7 +129,8 @@ public class Chessboard {
 					if (board[i][j] != Color.NONE.getVal()) {
 						status[i][j][k] = 1;
 					}
-					if (board[i][j] != Color.NONE.getVal() && board[i][j] == board[x][y]) {
+					if (board[i][j] != Color.NONE.getVal()
+							&& board[i][j] == board[x][y]) {
 						status[i][j][k] = status[x][y][k] + 1;
 					}
 				}
@@ -164,7 +168,9 @@ public class Chessboard {
 	public Result getResult() {
 		Result res = new Result();
 		res.setWinPath(winPath);
-		res.setWinUser(winColor.getVal() == Color.BLACK.getVal() ? room.getUser1Name() : room.getUser2Name());
+		if (null != winColor)
+			res.setWinUser(winColor.getVal() == Color.BLACK.getVal() ? room
+					.getUser1Name() : room.getUser2Name());
 		return res;
 	}
 

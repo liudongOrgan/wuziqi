@@ -23,33 +23,31 @@ public class ChessServices {
 	 * @param session
 	 * @param handler
 	 */
-	public void connected(WebSocketSession session, SystemWebSocketHandler handler) {
-		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
+	public void connected(WebSocketSession session,
+			SystemWebSocketHandler handler) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+				Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)
 			return;
-		Chessboard board = ChessboardCache.getBoardByRoom(r);
-		if (null == board) {
-			ChessboardCache.addBoardByRoom(r);
-			board = ChessboardCache.getBoardByRoom(r);
-		}
 		if (u.getUserName().equals(r.getUser1Name())) {
-			if (false == board.isUser1Ready())
-				board.setUser1Ready(true);
+			if (false == r.isUser1Ready())
+				r.setUser1Ready(true);
 		}
 		if (u.getUserName().equals(r.getUser2Name())) {
-			if (false == board.isUser2Ready())
-				board.setUser2Ready(true);
+			if (false == r.isUser2Ready())
+				r.setUser2Ready(true);
 		}
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		Chess c = new Chess();
 		c.setNextUserName(r.getUser1Name());
-		if (board.getStatus() == 2 && StringUtils.isNotBlank(board.getNextChessUserName())) {
-			c.setNextUserName(board.getNextChessUserName());
+		if (r.getStatus().intValue() == 2
+				&& StringUtils.isNotBlank(r.getNextChessUserName())) {
+			c.setNextUserName(r.getNextChessUserName());
 		}
 		j.setStatus("connected-one");
-		if (true == board.isUser1Ready() && true == board.isUser2Ready()) {
+		if (true == r.isUser1Ready() && true == r.isUser2Ready()) {
 			j.setStatus("connected");
 			c.setOpUserName(r.getUser1Name() + "," + r.getUser2Name());
 		}
@@ -66,22 +64,24 @@ public class ChessServices {
 	 * @param handler
 	 * @param chess
 	 */
-	public void chess(WebSocketSession session, SystemWebSocketHandler handler, Chess chess) {
-		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
+	public void chess(WebSocketSession session, SystemWebSocketHandler handler,
+			Chess chess) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+				Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)
 			return;
-		Chessboard board = ChessboardCache.getBoardByRoom(r);
+		// Chessboard board = ChessboardCache.getBoardByRoom(r);
 		chess.setOpUserName(u.getUserName());
-		if (false == board.chess(chess)) {
+		if (false == r.chess(chess)) {
 			return;
 		}
-		board.checkWin();
+		r.checkWin();
 
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		j.setStatus("chess");
-		if (true == board.isOver())
+		if (true == r.isOver())
 			j.setStatus("over");
 		j.setContent(chess);
 		TextMessage message = new TextMessage(JSON.toJSONString(j));
@@ -91,7 +91,8 @@ public class ChessServices {
 
 	// 退出
 	public void close(WebSocketSession session, SystemWebSocketHandler hand) {
-		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+				Key.WEBSOCKET_HTTP_SESS);
 		if (null == sess)
 			return;
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);

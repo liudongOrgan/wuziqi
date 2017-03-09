@@ -1,8 +1,9 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<jsp:include page="target.jsp"></jsp:include>
 <!DOCTYPE html>
 <html lang="en"><head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
 	<title>五子棋</title>
 	<style type="text/css">
 		*{
@@ -19,7 +20,7 @@
 			width:642px;
 			height: 642px;
 			/*border:1px solid;*/
-			background: url(/static/picture/bak.jpg);
+			background: url(${ctx }/static/picture/bak.jpg);
 			overflow: hidden;
 		}
 		.text{
@@ -46,11 +47,11 @@
  	<canvas id="can" width="640" height="640" style="position:absolute;z-index:1;">
 		您的浏览器不支持canvas
 	</canvas>
-	<img id="hoverImg" src="/static/picture/hover.png" style="position:absolute;" />
+	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;" />
 </div>
 <script>
 	function playSound(){
-		var audio = '<audio id="bgMusic" src="/static/sound/sound.mp3" style="display:none;" autoplay="autoplay"></audio>';
+		var audio = '<audio id="bgMusic" src="${ctx }/static/sound/sound.mp3" style="display:none;" autoplay="autoplay"></audio>';
 		$("audio").each(function(){
 			$(this).remove();
 		});
@@ -80,8 +81,8 @@
 	var black = new Image();
 	var white = new Image();
 	var clientWidth = document.documentElement.clientWidth;
-	black.src = "/static/picture/black.png";
-	white.src = "/static/picture/white.png";
+	black.src = "${ctx }/static/picture/black.png";
+	white.src = "${ctx }/static/picture/white.png";
 	//棋盘初始化
 	var can = document.getElementById('can');
 	var ctx = can.getContext("2d"); //获取该canvas的2D绘图环境对象
@@ -196,7 +197,7 @@
 			window.location.reload();
 			return;
 		}
-		var data = {"x" : x,"y" : y};
+		var data = {"url" : "chess", "x" : x,"y" : y};
 		websocket.send(JSON.stringify(data));
 	}
 	
@@ -320,7 +321,7 @@
 	自己昵称：<span class="curName"></span><br>
 	对手大名：<span class="rivalName"></span><br>
 	当前状态：<span class="chessStatus"></span><br>
-	所持棋子：<img class="black" src="/static/picture/black.png"/><img class="white" src="/static/picture/white.png"/><br>
+	所持棋子：<img class="black" src="${ctx }/static/picture/black.png"/><img class="white" src="${ctx }/static/picture/white.png"/><br>
 	<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;"/> 
 </div>
 </body>
@@ -333,7 +334,7 @@ var host = window.location.host;
 var websocket;
 function connectServer(){
 	if ('WebSocket' in window) {
-	    websocket = new WebSocket("ws://" + host + "/ws" );
+	    websocket = new WebSocket("ws://" + host + "${appname}/ws" );
 	} else if ('MozWebSocket' in window) {
 	    websocket = new MozWebSocket("ws://" + host + "/ws");
 	}

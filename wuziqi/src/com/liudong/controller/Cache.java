@@ -59,11 +59,13 @@ public class Cache {
 		Room r = rooms.get(roomName);
 		if (null == r || 3 == r.getStatus())
 			return false;
-		if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+		if (StringUtils.isNotBlank(r.getUser1Name())
+				&& StringUtils.isBlank(r.getUser2Name())) {
 			r.setUser2Name(u.getUserName());
 			return true;
 		}
-		if (StringUtils.isNotBlank(r.getUser2Name()) && StringUtils.isBlank(r.getUser1Name())) {
+		if (StringUtils.isNotBlank(r.getUser2Name())
+				&& StringUtils.isBlank(r.getUser1Name())) {
 			r.setUser1Name(u.getUserName());
 			return true;
 		}
@@ -87,11 +89,10 @@ public class Cache {
 			r.setUser2Name(null);
 			r.setStatus(3);
 		}
-		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+		if (StringUtils.isBlank(r.getUser1Name())
+				&& StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());
-			ChessboardCache.removeBoardByRoom(r);
 		}
-		ChessboardCache.userExit(u, r);
 		return true;
 	}
 

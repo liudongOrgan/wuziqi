@@ -48,7 +48,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 			sessions.put(userName, session);
 			// chessService.connected(session, this);
 			JSONObject json = new JSONObject();
-			json.put("url", "testChess");
+			json.put("url", "connected");
 			chessBoard.doService(session, this, json);
 		}
 	}

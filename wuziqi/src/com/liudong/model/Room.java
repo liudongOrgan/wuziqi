@@ -8,10 +8,9 @@ public class Room {
 	private String user2Name;
 	private String roomeName;
 	private Date createDate;
-
-	public Integer getStatus() {
-		return status;
-	}
+	private volatile Chessboard chessBoard = new Chessboard(this);
+	private volatile boolean user1Ready = false;
+	private volatile boolean user2Ready = false;
 
 	public void setStatus(Integer status) {
 		this.status = status;
@@ -47,6 +46,46 @@ public class Room {
 
 	public void setCreateDate(Date createDate) {
 		this.createDate = createDate;
+	}
+
+	public Chessboard getChessBoard() {
+		return chessBoard;
+	}
+
+	public boolean isUser1Ready() {
+		return user1Ready;
+	}
+
+	public void setUser1Ready(boolean user1Ready) {
+		this.user1Ready = user1Ready;
+	}
+
+	public boolean isUser2Ready() {
+		return user2Ready;
+	}
+
+	public void setUser2Ready(boolean user2Ready) {
+		this.user2Ready = user2Ready;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public String getNextChessUserName() {
+		return chessBoard.getNextChessUserName();
+	}
+
+	public boolean chess(Chess chess) {
+		return chessBoard.chess(chess);
+	}
+
+	public Color checkWin() {
+		return chessBoard.checkWin();
+	}
+
+	public boolean isOver() {
+		return chessBoard.isOver();
 	}
 
 }
