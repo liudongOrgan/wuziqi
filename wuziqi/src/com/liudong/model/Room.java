@@ -1,9 +1,10 @@
 package com.liudong.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Room {
-	private Integer status = 0;// 0默认 待加入 1 等待开始 2 进行中 3结束待销毁
+	private Integer status = 0;// 0默认 待加入 1 等待开始 2 进行中 3结束
 	private String user1Name;
 	private String user2Name;
 	private String roomeName;
@@ -77,6 +78,8 @@ public class Room {
 	}
 
 	public boolean chess(Chess chess) {
+		if (2 != this.status.intValue())
+			return false;
 		return chessBoard.chess(chess);
 	}
 
@@ -86,6 +89,10 @@ public class Room {
 
 	public boolean isOver() {
 		return chessBoard.isOver();
+	}
+
+	public List<Chess> getChessedList() {
+		return chessBoard.getChessedList();
 	}
 
 }

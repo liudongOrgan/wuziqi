@@ -1,11 +1,14 @@
 package com.liudong.listener;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.socket.WebSocketSession;
 
 import com.liudong.controller.Cache;
 import com.liudong.model.Key;
@@ -17,8 +20,6 @@ public class SessionListener implements HttpSessionListener {
 
 	@Override
 	public void sessionCreated(HttpSessionEvent arg0) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -31,6 +32,16 @@ public class SessionListener implements HttpSessionListener {
 			Cache.removeUser(u);
 		if (null != r || null != u)
 			Cache.backRoom(u, r);
+		WebSocketSession wSess = (WebSocketSession) sess
+		        .getAttribute(Key.HTTP_WEBSOCKET_SESSION_KEY);
+		if (null != wSess && wSess.isOpen()) {
+			try {
+				wSess.close();
+			} catch (IOException e) {
+				logger.error(
+				        "session invalidated, delete websocket exception!", e);
+			}
+		}
 	}
 
 }

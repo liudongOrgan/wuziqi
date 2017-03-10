@@ -17,20 +17,21 @@ import com.liudong.model.User;
 
 public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
-	private static Logger logger = LoggerFactory.getLogger(HandshakeInterceptor.class);
+	private static Logger logger = LoggerFactory
+	        .getLogger(HandshakeInterceptor.class);
 
 	@Override
-	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-			Map<String, Object> attributes) throws Exception {
-		System.out.println(request.getClass().getName());
+	public boolean beforeHandshake(ServerHttpRequest request,
+	        ServerHttpResponse response, WebSocketHandler wsHandler,
+	        Map<String, Object> attributes) throws Exception {
 		if (request instanceof ServletServerHttpRequest) {
 			ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-			HttpSession session = servletRequest.getServletRequest().getSession(false);
+			HttpSession session = servletRequest.getServletRequest()
+			        .getSession(false);
 			if (session != null) {
-				// 使用userName区分WebSocketHandler，以便定向发送消息
 				User u = (User) session.getAttribute(Key.USER_SESSION_KEY);
 				if (null == u) {
-					logger.error("用户未设置昵称进入！", new Exception());
+					logger.info("用户未设置昵称进入！");
 					return false;
 				}
 				attributes.put(Key.WEBSOCKET_USERNAME, u.getUserName());
@@ -41,8 +42,9 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	@Override
-	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-			Exception exception) {
+	public void afterHandshake(ServerHttpRequest request,
+	        ServerHttpResponse response, WebSocketHandler wsHandler,
+	        Exception exception) {
 
 	}
 }

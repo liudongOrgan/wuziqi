@@ -49,17 +49,19 @@
 	</canvas>
 	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;display:none;" />
 	<img id="pointImg" src="${ctx }/static/picture/93-dot-red.png" style="position:absolute;z-index: 10;display:none;" />
-</div>
+		<audio id="bgMusic"  style=";">
+			<source src="/wuziqi/static/sound/sound.mp3" type="audio/mpeg">
+			<source src="/wuziqi/static/sound/sound.ogg" type="audio/ogg">
+			您的浏览器不支持 audio 与元素。
+		</audio>
+
+	
+</div> 
 <script>
 	function playSound(){
-		var audio = '<audio id="bgMusic" src="${ctx }/static/sound/sound.mp3" style="display:none;" autoplay="autoplay"></audio>';
-		$("audio").each(function(){
-			$(this).remove();
-		});
-		$("body").append(audio);
-		var bgMusic = document.getElementById("bgMusic");
 		bgMusic.play();
-	}
+	} 
+
 
 
 	var text = document.getElementsByClassName('text');
@@ -215,9 +217,12 @@
 		websocket.send(JSON.stringify(data));
 	}
 	
+	function setDonotRecover(){
+		if(null == $['wuziqi']) $['wuziqi']={};
+		$['wuziqi']['canRecover'] = false;
+	}
+	
 	function chessed(x, y, isBlack){
-		playSound();
-
 		if (maps[x][y] === 0) {
 			if (isBlack) {
 				ctx.drawImage(black, y * 40, x * 40); //下黑子
@@ -390,6 +395,7 @@ var callbacks = {
 			var c = content['x']>-1 && content['x']<16;
 			c = c && content['y']>-1 && content['y'] < 16;
 			if(true == c){
+				playSound();
 				chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
 			}	
 		},
@@ -397,8 +403,19 @@ var callbacks = {
 			this.chess(data);
 			$(".info .chessStatus").html("胜负已分，游戏结束！");
 			boardInfo['ready'] = false;
+		},
+		"recover" : function(data){
+			var content = data['content'];
+			for(var i in content){
+				var item = content[i];
+				chessed(item['x'], item['y'], "BLACK" == item['color']);
+			}
 		}
 }
+
+$.extend({"wuziqi" : {
+	"canRecover" : true
+}});
 
 
 $(function(){

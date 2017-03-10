@@ -1,5 +1,7 @@
 package com.liudong.model;
 
+import com.alibaba.fastjson.JSONObject;
+
 public class Chess {
 	private String opUserName;
 	private int x;
@@ -45,6 +47,12 @@ public class Chess {
 
 	public void setNextUserName(String nextUserName) {
 		this.nextUserName = nextUserName;
+	}
+
+	public Chess copy() {
+		String json = JSONObject.toJSONString(this);
+		Chess tmp = JSONObject.parseObject(json, Chess.class);
+		return tmp;
 	}
 
 }
