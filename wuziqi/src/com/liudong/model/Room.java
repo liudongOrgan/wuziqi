@@ -2,9 +2,14 @@ package com.liudong.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Room {
-	private Integer status = 0;// 0默认 待加入 1 等待开始 2 进行中 3结束
+import com.liudong.model.constant.RoomStatus;
+
+public class Room extends ReentrantLock {
+	private static final long serialVersionUID = 3960279532871689856L;
+	private RoomStatus status = RoomStatus.DEFAULT;// 0默认 待加入 ,1 等待开始, 2 进行中,
+													// 3结束
 	private String user1Name;// 黑棋用户
 	private String user2Name;// 白棋用户
 	private String roomeName;// 房间名
@@ -13,7 +18,7 @@ public class Room {
 	private volatile boolean user1Ready = false;
 	private volatile boolean user2Ready = false;
 
-	public void setStatus(Integer status) {
+	public void setStatus(RoomStatus status) {
 		this.status = status;
 	}
 
@@ -87,7 +92,7 @@ public class Room {
 	/**
 	 * 当前房间状态
 	 */
-	public Integer getStatus() {
+	public RoomStatus getStatus() {
 		return status;
 	}
 
@@ -102,7 +107,7 @@ public class Room {
 	 * 落子
 	 */
 	public boolean chess(Chess chess) {
-		if (2 != this.status.intValue())
+		if (RoomStatus.ING != this.status)
 			return false;
 		return chessBoard.chess(chess);
 	}

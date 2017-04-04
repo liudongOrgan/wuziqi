@@ -20,6 +20,7 @@ public class SessionListener implements HttpSessionListener {
 
 	@Override
 	public void sessionCreated(HttpSessionEvent arg0) {
+		SessionCache.addSession(arg0.getSession());
 	}
 
 	@Override
@@ -32,16 +33,15 @@ public class SessionListener implements HttpSessionListener {
 			Cache.removeUser(u);
 		if (null != r || null != u)
 			Cache.backRoom(u, r);
-		WebSocketSession wSess = (WebSocketSession) sess
-		        .getAttribute(Key.HTTP_WEBSOCKET_SESSION_KEY);
+		WebSocketSession wSess = (WebSocketSession) sess.getAttribute(Key.HTTP_WEBSOCKET_SESSION_KEY);
 		if (null != wSess && wSess.isOpen()) {
 			try {
 				wSess.close();
 			} catch (IOException e) {
-				logger.error(
-				        "session invalidated, delete websocket exception!", e);
+				logger.error("session invalidated, delete websocket exception!", e);
 			}
 		}
+		SessionCache.delSession(sess.getId());
 	}
 
 }

@@ -31,7 +31,7 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
 			if (session != null) {
 				User u = (User) session.getAttribute(Key.USER_SESSION_KEY);
 				if (null == u) {
-					logger.info("用户未设置昵称进入！");
+					logger.info("用户未设置昵称进入！" + session.getId());
 					return false;
 				}
 				attributes.put(Key.WEBSOCKET_USERNAME, u.getUserName());

@@ -19,6 +19,7 @@ import com.liudong.model.JsonResult;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
 import com.liudong.model.User;
+import com.liudong.model.constant.RoomStatus;
 
 @Service
 public class ChessServices {
@@ -30,10 +31,8 @@ public class ChessServices {
 	 * @param session
 	 * @param handler
 	 */
-	public void connected(WebSocketSession session,
-	        SystemWebSocketHandler handler) {
-		HttpSession sess = (HttpSession) session.getAttributes().get(
-		        Key.WEBSOCKET_HTTP_SESS);
+	public void connected(WebSocketSession session, SystemWebSocketHandler handler) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)
@@ -50,15 +49,14 @@ public class ChessServices {
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		Chess c = new Chess();
 		c.setNextUserName(r.getUser1Name());
-		if (r.getStatus().intValue() == 2
-		        && StringUtils.isNotBlank(r.getNextChessUserName())) {
+		if (r.getStatus() == RoomStatus.ING && StringUtils.isNotBlank(r.getNextChessUserName())) {
 			c.setNextUserName(r.getNextChessUserName());
 		}
 		j.setStatus("connected-one");
 		if (true == r.isUser1Ready() && true == r.isUser2Ready()) {
 			j.setStatus("connected");
 			c.setOpUserName(r.getUser1Name() + "," + r.getUser2Name());
-			r.setStatus(2);
+			r.setStatus(RoomStatus.ING);
 		}
 		j.setContent(c);
 		j.setUrl("connected");
@@ -69,7 +67,7 @@ public class ChessServices {
 
 	// 游戏进行中 刷新页面 恢复棋盘
 	private void checkAndSendChessList(WebSocketSession session, Room r) {
-		if (r.getStatus().intValue() != 2) {
+		if (r.getStatus() != RoomStatus.ING) {
 			return;
 		}
 		JsonResult<List<Chess>> res = new JsonResult<List<Chess>>();
@@ -94,10 +92,8 @@ public class ChessServices {
 	 * @param handler
 	 * @param chess
 	 */
-	public void chess(WebSocketSession session, SystemWebSocketHandler handler,
-	        Chess chess) {
-		HttpSession sess = (HttpSession) session.getAttributes().get(
-		        Key.WEBSOCKET_HTTP_SESS);
+	public void chess(WebSocketSession session, SystemWebSocketHandler handler, Chess chess) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
 		if (null == r || null == u)

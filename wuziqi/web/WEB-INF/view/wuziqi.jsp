@@ -4,6 +4,8 @@
 <html lang="en"><head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
+	  <link rel="icon" href="${ctx }/static/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="${ctx }/static/favicon.ico" type="image/x-icon" />
 	<title>五子棋</title>
 	<style type="text/css">
 		*{
@@ -50,8 +52,8 @@
 	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;display:none;" />
 	<img id="pointImg" src="${ctx }/static/picture/93-dot-red.png" style="position:absolute;z-index: 10;display:none;" />
 		<audio id="bgMusic"  style=";">
-			<source src="/wuziqi/static/sound/sound.mp3" type="audio/mpeg">
-			<source src="/wuziqi/static/sound/sound.ogg" type="audio/ogg">
+			<source src="${ctx }/static/sound/sound.mp3" type="audio/mpeg">
+			<source src="${ctx }/static/sound/sound.ogg" type="audio/ogg">
 			您的浏览器不支持 audio 与元素。
 		</audio>
 
@@ -134,11 +136,12 @@
 		var l = obj.offsetLeft + 20;
 		var t = obj.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l ;
-		var y = e.clientY - t ;
-		if(IsPC()){
-			x += $(document).scrollLeft();
-			y += $(document).scrollTop()
+		var x = e.pageX - l ;
+		var y = e.pageY - t ;
+		//alert(e.clientX +"  "+ e.screenX +"   "+e.pageX);
+		if(IsPC()){ 
+			//x += $(document).scrollLeft();
+			//y += $(document).scrollTop()
 		}
 		var row,
 			col,
@@ -175,11 +178,11 @@
 		var l = this.offsetLeft + 20;
 		var t = this.offsetTop + 20;
 		//获取点击相对棋盘坐标
-		var x = e.clientX - l  ;
-		var y = e.clientY - t  ;
+		var x = e.pageX - l  ;
+		var y = e.pageY - t  ;
 		if(IsPC()){
-			x += $(document).scrollLeft();
-			y += $(document).scrollTop()
+			//x += $(document).scrollLeft();
+			//y += $(document).scrollTop()
 		}
 		// alert(x);
 		var row,
@@ -202,6 +205,7 @@
 			return;
 		}
 		if(user['userName'] != boardInfo['nextUsesrName'] || true != boardInfo['ready']){ // 不该当前玩家下棋
+		    alert('请等待对方玩家  \''+boardInfo['nextUsesrName'] +"' 落子！");
 			return;
 		}
 		sendChessInfo(row, col);
@@ -354,9 +358,9 @@ var host = window.location.host;
 var websocket;
 function connectServer(){
 	if ('WebSocket' in window) {
-	    websocket = new WebSocket("ws://" + host + "${appname}/ws" );
+	    websocket = new WebSocket("ws://" + host + "${appname}/ws?jsessionid=<%=session.getId() %>" );
 	} else if ('MozWebSocket' in window) {
-	    websocket = new MozWebSocket("ws://" + host + "/ws");
+	    websocket = new MozWebSocket("ws://" + host + "/ws?jsessionid=<%=session.getId() %>");
 	}
 	websocket.onopen = function(evnt) {
 	    console.log("websocket连接上");

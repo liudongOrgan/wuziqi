@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.liudong.model.Room;
 import com.liudong.model.User;
+import com.liudong.model.constant.RoomStatus;
 
 public class Cache {
 	private static Map<String, Room> rooms = new HashMap<String, Room>();
@@ -57,17 +58,20 @@ public class Cache {
 		if (StringUtils.isBlank(roomName))
 			return false;
 		Room r = rooms.get(roomName);
-		if (null == r || 3 == r.getStatus())
-			return false;
-		if (StringUtils.isNotBlank(r.getUser1Name())
-				&& StringUtils.isBlank(r.getUser2Name())) {
-			r.setUser2Name(u.getUserName());
-			return true;
-		}
-		if (StringUtils.isNotBlank(r.getUser2Name())
-				&& StringUtils.isBlank(r.getUser1Name())) {
-			r.setUser1Name(u.getUserName());
-			return true;
+		r.lock();
+		try {
+			if (null == r || RoomStatus.ING == r.getStatus())
+				return false;
+			if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+				r.setUser2Name(u.getUserName());
+				return true;
+			}
+			if (StringUtils.isNotBlank(r.getUser2Name()) && StringUtils.isBlank(r.getUser1Name())) {
+				r.setUser1Name(u.getUserName());
+				return true;
+			}
+		} finally {
+			r.unlock();
 		}
 		return false;
 	}
@@ -83,14 +87,13 @@ public class Cache {
 		r = rooms.get(r.getRoomeName());
 		if (u.getUserName().equals(r.getUser1Name())) {
 			r.setUser1Name(null);
-			r.setStatus(3);
+			r.setStatus(RoomStatus.OVER);
 		}
 		if (u.getUserName().equals(r.getUser2Name())) {
 			r.setUser2Name(null);
-			r.setStatus(3);
+			r.setStatus(RoomStatus.OVER);
 		}
-		if (StringUtils.isBlank(r.getUser1Name())
-				&& StringUtils.isBlank(r.getUser2Name())) {
+		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());
 		}
 		return true;

@@ -17,6 +17,7 @@ import com.liudong.model.JsonResult;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
 import com.liudong.model.User;
+import com.liudong.model.constant.RoomStatus;
 
 @Controller
 @RequestMapping("/")
@@ -54,7 +55,7 @@ public class Index {
 		Room r = new Room();
 		r.setRoomeName(roomName);
 		r.setCreateDate(new Date());
-		r.setStatus(1);
+		r.setStatus(RoomStatus.WAIT);
 		Object cur = httpSession.getAttribute(Key.USER_SESSION_KEY);
 		r.setUser1Name(null == cur ? "房间名称" : ((User) cur).getUserName());
 		if (true == Cache.addRoom(r)) {
@@ -145,10 +146,10 @@ public class Index {
 			httpSession.setAttribute(Key.USER_SESSION_ROOM_KEY, r);
 			j.setStatus("success");
 			return j;
-		} else {
-			j.setStatus("error");
-			return j;
 		}
+		j.setStatus("error");
+		return j;
+
 	}
 
 	@RequestMapping("backroom")
