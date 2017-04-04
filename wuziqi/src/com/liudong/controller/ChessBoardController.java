@@ -34,6 +34,7 @@ public class ChessBoardController {
 				Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
+		System.out.println(r);
 		if (null == r || null == u)
 			return false;
 		Chess chess = new Chess();

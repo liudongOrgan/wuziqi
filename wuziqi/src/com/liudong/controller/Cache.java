@@ -88,10 +88,14 @@ public class Cache {
 		if (u.getUserName().equals(r.getUser1Name())) {
 			r.setUser1Name(null);
 			r.setStatus(RoomStatus.OVER);
+			r.reset();
+			r.setUser1Ready(false);
 		}
 		if (u.getUserName().equals(r.getUser2Name())) {
 			r.setUser2Name(null);
 			r.setStatus(RoomStatus.OVER);
+			r.reset();
+			r.setUser2Ready(false);
 		}
 		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());

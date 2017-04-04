@@ -4,8 +4,8 @@
 <html lang="en"><head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
-	  <link rel="icon" href="${ctx }/static/favicon.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="${ctx }/static/favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 	<title>五子棋</title>
 	<style type="text/css">
 		*{
@@ -346,7 +346,8 @@
 	对手大名：<span class="rivalName"></span><br>
 	当前状态：<span class="chessStatus"></span><br>
 	所持棋子：<img class="black" src="${ctx }/static/picture/black.png"/><img class="white" src="${ctx }/static/picture/white.png"/><br>
-	<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;"/> 
+	<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;"/> <br>
+	<input id="restartgame" type="button" value="重新开始" onclick="window.location.reload();" style="display:none;width:300px;height:55px; margin-bottom:50px;"/> 
 </div>
 </body>
 
@@ -380,6 +381,7 @@ function messageHandler(data){
 	data = JSON.parse(data);
 	if('exit' == data['status']){
 		$(".info .chessStatus").html("有玩家退出！");
+		$(".info .rivalName").html("");
 		boardInfo['ready'] = false;
 		alert("有玩家退出！");
 		return;
@@ -406,6 +408,7 @@ var callbacks = {
 		"over" : function(data){
 			this.chess(data);
 			$(".info .chessStatus").html("胜负已分，游戏结束！");
+			$("#restartgame").show();
 			boardInfo['ready'] = false;
 		},
 		"recover" : function(data){
@@ -454,6 +457,10 @@ function initInfo(data){
 		$(".info .chessStatus").html("等待 自己 下棋");
 	} else {
 		$(".info .chessStatus").html("等待 对手 下棋");
+	}
+	if( 'connected-first' == data['status'] ){
+	    alert('开始游戏！');
+		window.location.reload();
 	}
 }
 

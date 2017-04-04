@@ -56,6 +56,10 @@ public class ChessServices {
 		if (true == r.isUser1Ready() && true == r.isUser2Ready()) {
 			j.setStatus("connected");
 			c.setOpUserName(r.getUser1Name() + "," + r.getUser2Name());
+			if (RoomStatus.ING != r.getStatus()) {
+				j.setStatus("connected-first");
+				r.reset();
+			}
 			r.setStatus(RoomStatus.ING);
 		}
 		j.setContent(c);

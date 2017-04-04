@@ -4,6 +4,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
 <style type="text/css">
 * {
@@ -107,6 +109,7 @@
 		loadRoomList();
 		loadCreateRoom();
 		checkStart();
+		reloadRoomList();
 	});
 
 	var user = null;
@@ -263,12 +266,12 @@
 	
 	
 	function checkStart(){
+	
 		var data = {
 		};
 		var url = "checkstart";
 		var callback = function(data) {
 			if ("success" == data.status) {
-				alert("游戏开始！");
 				window.location.href = "wuziqi";
 				return;
 			}
@@ -276,8 +279,14 @@
 		};
 		sendPost(url, data, callback);
 		
-		setTimeout("checkStart()",1000);
+		setTimeout("checkStart()",666);
 	}
+	
+	function reloadRoomList(){
+		loadRoomList();
+		setTimeout("reloadRoomList()",1500);
+	}
+	
 </script>
 
 </head>

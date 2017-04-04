@@ -18,6 +18,10 @@ public class Room extends ReentrantLock {
 	private volatile boolean user1Ready = false;
 	private volatile boolean user2Ready = false;
 
+	public void reset() {
+		chessBoard = new Chessboard(this);
+	}
+
 	public void setStatus(RoomStatus status) {
 		this.status = status;
 	}
@@ -116,7 +120,14 @@ public class Room extends ReentrantLock {
 	 * 判断是否有人获胜
 	 */
 	public Color checkWin() {
-		return chessBoard.checkWin();
+		Color isWin = chessBoard.checkWin();
+		if (Color.NONE != isWin) {
+			this.status = RoomStatus.OVER;
+			this.user1Ready = false;
+			this.user2Ready = false;
+		}
+
+		return isWin;
 	}
 
 	/**
