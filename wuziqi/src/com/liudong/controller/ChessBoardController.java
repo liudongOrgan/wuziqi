@@ -22,19 +22,15 @@ public class ChessBoardController {
 	ChessServices chessService;
 
 	@SocketMapping(path = "connected")
-	public void connected(SystemWebSocketHandler handler,
-			WebSocketSession session) {
+	public void connected(SystemWebSocketHandler handler, WebSocketSession session) {
 		chessService.connected(session, handler);
 	}
 
 	@SocketMapping(path = "chess")
-	public boolean chess(JSONObject mess, SystemWebSocketHandler handler,
-			WebSocketSession session) throws Exception {
-		HttpSession sess = (HttpSession) session.getAttributes().get(
-				Key.WEBSOCKET_HTTP_SESS);
+	public boolean chess(JSONObject mess, SystemWebSocketHandler handler, WebSocketSession session) throws Exception {
+		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
 		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
-		System.out.println(r);
 		if (null == r || null == u)
 			return false;
 		Chess chess = new Chess();
@@ -56,7 +52,7 @@ public class ChessBoardController {
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		j.setUrl("chess");
 		j.setStatus("chess");
-		if (true == r.isOver()){
+		if (true == r.isOver()) {
 			j.setStatus("over");
 			j.setUrl("over");
 		}
