@@ -19,31 +19,54 @@ import com.liudong.listener.SessionCache;
 import com.liudong.model.Key;
 
 public class LoginFilter implements Filter {
+	String[] resource = new String[] { ".js", ".png", ".jpg", ".css", ".ico",
+	        ".ttf", ".woff", ".gif" };
 
 	@Override
 	public void destroy() {
 	}
 
 	@Override
-	public void doFilter(ServletRequest arg0, ServletResponse arg1, FilterChain arg2)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest arg0, ServletResponse arg1,
+	        FilterChain arg2) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) arg0;
 		HttpServletResponse resp = (HttpServletResponse) arg1;
 		HttpSession sess = req.getSession();
 
 		if (false == checkLogin(sess)) {
 			String uri = req.getRequestURI();
-			if (uri.startsWith("/login") || uri.endsWith(".js")) {
+			String contextPath = req.getContextPath();
+			uri = uri.replace(contextPath, "");
+			if (uri.startsWith("/login") || isResourceRequest(uri)) {
 				arg2.doFilter(arg0, arg1);
 			} else {
-				resp.sendRedirect("/login/page");
+				resp.sendRedirect(contextPath + "/login/page");
 			}
 			return;
 		}
 
 		sessionValidate(req, sess);
 		arg2.doFilter(arg0, arg1);
+	}
 
+	/**
+	 * 是否是资源文件请求
+	 * 
+	 * @param uri
+	 * @return
+	 */
+	private boolean isResourceRequest(String uri) {
+		if (uri.lastIndexOf(".") < 0)
+			return false;
+		String endWinth = uri.substring(uri.lastIndexOf("."));
+		if (StringUtils.isBlank(endWinth))
+			return false;
+		for (String str : resource) {
+			if (str.endsWith(endWinth.trim())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean checkLogin(HttpSession sess) {
@@ -56,7 +79,9 @@ public class LoginFilter implements Filter {
 	private void sessionValidate(HttpServletRequest req, HttpSession sess) {
 		String uri = req.getRequestURI();
 		String str = req.getParameter("jsessionid");
-		if (uri.contains("ws") && sess.getAttributeNames().hasMoreElements() == false && StringUtils.isNotBlank(str)) {
+		if (uri.contains("ws")
+		        && sess.getAttributeNames().hasMoreElements() == false
+		        && StringUtils.isNotBlank(str)) {
 			// 某些手机浏览器 websocket握手http请求中没有带cookie
 			HttpSession sessBefore = SessionCache.getSessionById(str);
 			Enumeration<String> names = sessBefore.getAttributeNames();

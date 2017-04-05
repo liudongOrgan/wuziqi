@@ -4,8 +4,8 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
 <style type="text/css">
 * {
