@@ -4,16 +4,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.liudong.model.constant.RoomStatus;
 
 public class Room extends ReentrantLock {
+	private long id = this.hashCode() * 100000L + System.currentTimeMillis()
+	        % 1000 * 100 + (long) (Math.random() * 100);
+
 	private static final long serialVersionUID = 3960279532871689856L;
 	private RoomStatus status = RoomStatus.DEFAULT;// 0默认 待加入 ,1 等待开始, 2 进行中,
-													// 3结束
+	                                               // 3结束
 	private String user1Name;// 黑棋用户
 	private String user2Name;// 白棋用户
 	private String roomeName;// 房间名
-	private Date createDate;// 创建时间
+	@JsonFormat(pattern = "HH:mm:ss", timezone = "GMT+8")
+	private Date createDate = new Date();// 创建时间
 	private volatile Chessboard chessBoard = new Chessboard(this);
 	private volatile boolean user1Ready = false;
 	private volatile boolean user2Ready = false;
@@ -64,10 +69,6 @@ public class Room extends ReentrantLock {
 	 */
 	public Date getCreateDate() {
 		return createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
 	}
 
 	/**
@@ -142,6 +143,14 @@ public class Room extends ReentrantLock {
 	 */
 	public List<Chess> getChessedList() {
 		return chessBoard.getChessedList();
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 }

@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en"><head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
 	<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />

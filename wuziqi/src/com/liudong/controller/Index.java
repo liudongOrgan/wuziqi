@@ -1,6 +1,5 @@
 package com.liudong.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -26,16 +25,22 @@ public class Index {
 	ChessServices chessService;
 
 	@RequestMapping("index")
-	public String index() {
-		return "index";
+	public ModelAndView index(HttpSession httpSession) {
+		Object r = httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("room", r);
+		mv.setViewName("roomlist");
+		return mv;
 	}
 
 	@RequestMapping("wuziqi")
 	public ModelAndView index2(HttpSession httpSession) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("wuziqi");
-		mv.addObject("user", JSON.toJSONString(httpSession.getAttribute(Key.USER_SESSION_KEY)));
-		mv.addObject("room", JSON.toJSONString(httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY)));
+		mv.addObject("user", JSON.toJSONString(httpSession
+		        .getAttribute(Key.USER_SESSION_KEY)));
+		mv.addObject("room", JSON.toJSONString(httpSession
+		        .getAttribute(Key.USER_SESSION_ROOM_KEY)));
 		return mv;
 	}
 
@@ -54,7 +59,6 @@ public class Index {
 
 		Room r = new Room();
 		r.setRoomeName(roomName);
-		r.setCreateDate(new Date());
 		r.setStatus(RoomStatus.WAIT);
 		Object cur = httpSession.getAttribute(Key.USER_SESSION_KEY);
 		r.setUser1Name(null == cur ? "房间名称" : ((User) cur).getUserName());
@@ -79,6 +83,12 @@ public class Index {
 		return j;
 	}
 
+	/**
+	 * 获取用户创建的房间
+	 * 
+	 * @param httpSession
+	 * @return
+	 */
 	@RequestMapping("getcreatedroom")
 	@ResponseBody
 	public JsonResult<Room> getCreatedRoom(HttpSession httpSession) {
@@ -87,10 +97,7 @@ public class Index {
 		Object r = httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
 		if (null != r) {
 			Room room = (Room) r;
-			if (StringUtils.isBlank(room.getUser1Name()) && StringUtils.isBlank(room.getUser2Name())) {
-				httpSession.removeAttribute(Key.USER_SESSION_ROOM_KEY);
-				r = httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
-			}
+			room = Cache.getRoomeByName(room.getRoomeName());
 		}
 		j.setContent(null == r ? null : (Room) r);
 		return j;
@@ -98,7 +105,8 @@ public class Index {
 
 	@RequestMapping("createusername")
 	@ResponseBody
-	public JsonResult<User> createusername(String username, HttpSession httpSession) {
+	public JsonResult<User> createusername(String username,
+	        HttpSession httpSession) {
 		JsonResult<User> j = new JsonResult<User>();
 		if (null != httpSession.getAttribute(Key.USER_SESSION_KEY)) {
 			j.setStatus("created");
@@ -138,8 +146,12 @@ public class Index {
 		JsonResult<Room> j = new JsonResult<Room>();
 		User u = (User) httpSession.getAttribute(Key.USER_SESSION_KEY);
 		Room r = (Room) httpSession.getAttribute(Key.USER_SESSION_ROOM_KEY);
-		if (null != r) {
-			backroom(roomname, httpSession);
+		if (null != r && r.getRoomeName().equals(roomname)) {// 重新进入房间直接返回
+			j.setStatus("success");
+			return j;
+		}
+		if (null != r) { // 如果已经进入房间则退出房间
+			backroom(r.getRoomeName(), httpSession);
 		}
 		if (true == Cache.enterRoom(u, roomname)) {
 			r = Cache.getRoomeByName(roomname);
@@ -175,11 +187,18 @@ public class Index {
 		j.setStatus("error");
 		if (null == r)
 			return j;
-
-		// if (StringUtils.isNotBlank(r.getUser1Name()) &&
-		// StringUtils.isNotBlank(r.getUser2Name()))
 		j.setStatus("success");
+		return j;
+	}
 
+	@RequestMapping("exit")
+	@ResponseBody
+	public JsonResult<Room> exit(HttpSession httpSession) {
+		User u = (User) httpSession.getAttribute(Key.USER_SESSION_KEY);
+		Cache.removeUser(u);
+		httpSession.invalidate();
+		JsonResult<Room> j = new JsonResult<Room>();
+		j.setStatus("success");
 		return j;
 	}
 

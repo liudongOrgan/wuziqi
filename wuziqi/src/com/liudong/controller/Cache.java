@@ -1,7 +1,6 @@
 package com.liudong.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.liudong.model.Room;
 import com.liudong.model.User;
 import com.liudong.model.constant.RoomStatus;
+import com.liudong.util.MyHashMap;
 
 public class Cache {
-	private static Map<String, Room> rooms = new HashMap<String, Room>();
+	private static Map<String, Room> rooms = new MyHashMap<String, Room>();
 
-	private static Map<String, User> users = new HashMap<String, User>();
+	private static Map<String, User> users = new MyHashMap<String, User>();
 
 	public static Room getRoomeByName(String roomeName) {
 		return rooms.get(roomeName);
@@ -62,11 +62,13 @@ public class Cache {
 		try {
 			if (null == r || RoomStatus.ING == r.getStatus())
 				return false;
-			if (StringUtils.isNotBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+			if (StringUtils.isNotBlank(r.getUser1Name())
+			        && StringUtils.isBlank(r.getUser2Name())) {
 				r.setUser2Name(u.getUserName());
 				return true;
 			}
-			if (StringUtils.isNotBlank(r.getUser2Name()) && StringUtils.isBlank(r.getUser1Name())) {
+			if (StringUtils.isNotBlank(r.getUser2Name())
+			        && StringUtils.isBlank(r.getUser1Name())) {
 				r.setUser1Name(u.getUserName());
 				return true;
 			}
@@ -97,7 +99,8 @@ public class Cache {
 			r.reset();
 			r.setUser2Ready(false);
 		}
-		if (StringUtils.isBlank(r.getUser1Name()) && StringUtils.isBlank(r.getUser2Name())) {
+		if (StringUtils.isBlank(r.getUser1Name())
+		        && StringUtils.isBlank(r.getUser2Name())) {
 			rooms.remove(r.getRoomeName());
 		}
 		return true;

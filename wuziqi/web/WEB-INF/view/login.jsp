@@ -25,7 +25,7 @@
 		}
 		var callback = function(data){
 			if("created" == data['status']){
-				window.location.href="/index";
+				window.location.href="${ctx}/index";
 				return;
 			}
 			if("long" == data['status']){
@@ -41,7 +41,7 @@
 				return;
 			}
 			if("success" == data['status']){
-				window.location.href="/index";
+				window.location.href="${ctx}/index";
 			}
 		}
 		sendPost(url, data, callback);

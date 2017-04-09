@@ -1,5 +1,7 @@
 package com.liudong.model.constant;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum RoomStatus {
 	/**
 	 * 默认状态
@@ -21,7 +23,9 @@ public enum RoomStatus {
 		this.value = val;
 	}
 
+	@JsonValue
 	public int getVlaue() {
 		return this.value;
 	}
+
 }

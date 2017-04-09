@@ -15,14 +15,7 @@ import com.liudong.model.User;
 @Controller
 @RequestMapping("/login")
 public class LoginCtrl {
-	@RequestMapping("jq")
-	public ModelAndView jqm(HttpSession httpSession) {
-
-		ModelAndView mv = new ModelAndView();
-		mv.setViewName("roomlist");
-		return mv;
-	}
-	
+ 
 	@RequestMapping("page")
 	public ModelAndView loginPage(HttpSession httpSession) {
 		if (null != httpSession.getAttribute(Key.USER_SESSION_KEY)) {
