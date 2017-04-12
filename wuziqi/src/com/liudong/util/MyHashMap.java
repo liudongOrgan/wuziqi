@@ -9,12 +9,17 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 容器中超过15分钟的没有被访问的内容将会被删除
  * 
  * @author Administrator
  */
 public class MyHashMap<K, V> implements Map<K, V> {
+	Logger log = LoggerFactory.getLogger(this.getClass());
+
 	private HashMap<K, MyEntry<K, V>> map = new HashMap<K, MyEntry<K, V>>();
 	PriorityQueue<MyEntry<K, V>> pq = new PriorityQueue<MyEntry<K, V>>(11,
 	        new Comparator<MyEntry<K, V>>() {
@@ -106,6 +111,12 @@ public class MyHashMap<K, V> implements Map<K, V> {
 	@Override
 	public boolean containsValue(Object value) {
 		// return map.containsValue(value);
+		try {
+			throw new Exception("MyHashMap containsValue!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("containsValue", e);
+		}
 		return false;
 	}
 
@@ -117,6 +128,12 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
 	@Override
 	public void putAll(Map<? extends K, ? extends V> m) {
+		try {
+			throw new Exception("MyHashMap putAll!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("putAll", e);
+		}
 		// map.putAll(m);
 	}
 
@@ -132,6 +149,12 @@ public class MyHashMap<K, V> implements Map<K, V> {
 
 	@Override
 	public Collection<V> values() {
+		try {
+			throw new Exception("MyHashMap values!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("values", e);
+		}
 		return null;
 	}
 

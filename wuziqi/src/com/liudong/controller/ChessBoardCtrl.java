@@ -15,22 +15,33 @@ import com.liudong.model.JsonResult;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
 import com.liudong.model.User;
+import com.liudong.util.SessionUtil;
 
 @Controller
-public class ChessBoardController {
+public class ChessBoardCtrl {
 	@Autowired
 	ChessServices chessService;
 
 	@SocketMapping(path = "connected")
-	public void connected(SystemWebSocketHandler handler, WebSocketSession session) {
+	public void connected(SystemWebSocketHandler handler,
+	        WebSocketSession session) {
 		chessService.connected(session, handler);
 	}
 
+	@SocketMapping(path = "restart")
+	public void restart(SystemWebSocketHandler handler, WebSocketSession session) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+		        Key.WEBSOCKET_HTTP_SESS);
+		chessService.restart(session, handler, sess);
+	}
+
 	@SocketMapping(path = "chess")
-	public boolean chess(JSONObject mess, SystemWebSocketHandler handler, WebSocketSession session) throws Exception {
-		HttpSession sess = (HttpSession) session.getAttributes().get(Key.WEBSOCKET_HTTP_SESS);
-		Room r = (Room) sess.getAttribute(Key.USER_SESSION_ROOM_KEY);
-		User u = (User) sess.getAttribute(Key.USER_SESSION_KEY);
+	public boolean chess(JSONObject mess, SystemWebSocketHandler handler,
+	        WebSocketSession session) throws Exception {
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+		        Key.WEBSOCKET_HTTP_SESS);
+		Room r = SessionUtil.getRoomBySession(sess);
+		User u = SessionUtil.getUserBySession(sess);
 		if (null == r || null == u)
 			return false;
 		Chess chess = new Chess();

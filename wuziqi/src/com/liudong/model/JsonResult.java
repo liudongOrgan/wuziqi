@@ -1,6 +1,9 @@
 package com.liudong.model;
 
 public class JsonResult<T> {
+	public final static String FAIL = "fail";
+	public final static String SUCC = "success";
+
 	private String url;
 	private String status;
 	private T content;

@@ -58,6 +58,8 @@ public class Cache {
 		if (StringUtils.isBlank(roomName))
 			return false;
 		Room r = rooms.get(roomName);
+		if (null == r)
+			return false;
 		r.lock();
 		try {
 			if (null == r || RoomStatus.ING == r.getStatus())

@@ -1,66 +1,76 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <jsp:include page="target.jsp"></jsp:include>
 <!DOCTYPE html>
-<html lang="en"><head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
-	<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
-	<title>五子棋</title>
-	<style type="text/css">
-		*{
-			margin:0;
-			padding:0;
-			-moz-user-select:none;/*火狐*/
-			-webkit-user-select:none;/*webkit浏览器*/
-			-ms-user-select:none;/*IE10*/
-			-khtml-user-select:none;/*早期浏览器*/
-			user-select:none;
-		}
-		.gobang{
-			margin:10px auto;
-			width:642px;
-			height: 642px;
-			/*border:1px solid;*/
-			background: url(${ctx }/static/picture/bak.jpg);
-			overflow: hidden;
-		}
-		.text{
-			margin:0 auto;
-			width:100px;
-			height:40px;
-			text-align: center;
-			color:#f00;
-			border:1px solid red;
-			line-height: 40px;
-			display: block;
-		}
-		#can{
-			margin:0px auto;
-			border:1px solid green;
-			display: block;
-		}
-	</style>
+<html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
+<link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
+<script type="text/javascript" src="${ctx }/static/js/common.js"></script>
+<title>五子棋</title>
+<jsp:include page="../common/jsvarcommon.jsp"></jsp:include>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+	-moz-user-select: none; /*火狐*/
+	-webkit-user-select: none; /*webkit浏览器*/
+	-ms-user-select: none; /*IE10*/
+	-khtml-user-select: none; /*早期浏览器*/
+	user-select: none;
+}
+body{overflow-y:scroll;}
+
+.gobang {
+	margin: 10px auto;
+	width: 642px;
+	height: 642px;
+	/*border:1px solid;*/
+	background: url(${ctx }/static/picture/bak.jpg);
+	overflow: hidden;
+}
+
+.text {
+	margin: 0 auto;
+	width: 100px;
+	height: 40px;
+	text-align: center;
+	color: #f00;
+	border: 1px solid red;
+	line-height: 40px;
+	display: block;
+}
+
+#can {
+	margin: 0px auto;
+	border: 1px solid green;
+	display: block;
+}
+</style>
 </head>
 <body>
 
-<canvas class="text">PK</canvas>
-<div class="gobang">
- 	<canvas id="can" width="640" height="640" style="position:absolute;z-index:1;">
+	<canvas class="text">PK</canvas>
+	<div class="gobang">
+		<canvas id="can" width="640" height="640"
+			style="position:absolute;z-index:1;">
 		您的浏览器不支持canvas
 	</canvas>
-	<img id="hoverImg" src="${ctx }/static/picture/hover.png" style="position:absolute;display:none;" />
-	<img id="pointImg" src="${ctx }/static/picture/93-dot-red.png" style="position:absolute;z-index: 10;display:none;" />
-		<audio id="bgMusic"  style=";">
+		<img id="hoverImg" src="${ctx }/static/picture/hover.png"
+			style="position:absolute;display:none;" /> <img id="pointImg"
+			src="${ctx }/static/picture/93-dot-red.png"
+			style="position:absolute;z-index: 10;display:none;" />
+		<audio id="bgMusic" style=";">
 			<source src="${ctx }/static/sound/sound.mp3" type="audio/mpeg">
 			<source src="${ctx }/static/sound/sound.ogg" type="audio/ogg">
 			您的浏览器不支持 audio 与元素。
 		</audio>
 
-	
-</div> 
-<script>
+
+	</div>
+	<script>
 	function playSound(){
 		bgMusic.play();
 	} 
@@ -342,14 +352,14 @@
 </script>
 
 
-<div class="info">
-	自己昵称：<span class="curName"></span><br>
-	对手大名：<span class="rivalName"></span><br>
-	当前状态：<span class="chessStatus"></span><br>
-	所持棋子：<img class="black" src="${ctx }/static/picture/black.png"/><img class="white" src="${ctx }/static/picture/white.png"/><br>
-	<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;"/> <br>
-	<input id="restartgame" type="button" value="重新开始" onclick="window.location.reload();" style="display:none;width:300px;height:55px; margin-bottom:50px;"/> 
-</div>
+	<div class="info">
+		自己昵称：<span class="curName"></span><br> 
+		对手大名：<span class="rivalName"></span><br> 
+		当前状态：<span class="chessStatus"></span><br>
+		所持棋子：<img class="black" src="${ctx }/static/picture/black.png" /><img class="white" src="${ctx }/static/picture/white.png" /><br> 
+		<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;" /> <br> 
+		<input id="restartgame" type="button" value="重新开始" onclick="restart();" style="display:none;width:300px;height:55px; margin-bottom:50px;" />
+	</div>
 </body>
 
 <script>
@@ -360,9 +370,9 @@ var host = window.location.host;
 var websocket;
 function connectServer(){
 	if ('WebSocket' in window) {
-	    websocket = new WebSocket("ws://" + host + "${appname}/ws?jsessionid=<%=session.getId() %>" );
+	    websocket = new WebSocket("ws://" + host + "${appname}/ws?jsessionid=<%=session.getId()%>" );
 	} else if ('MozWebSocket' in window) {
-	    websocket = new MozWebSocket("ws://" + host + "/ws?jsessionid=<%=session.getId() %>");
+	    websocket = new MozWebSocket("ws://" + host + "/ws?jsessionid=<%=session.getId()%>");
 	}
 	websocket.onopen = function(evnt) {
 	    console.log("websocket连接上");
@@ -372,10 +382,11 @@ function connectServer(){
 	};
 	websocket.onerror = function(evnt) {
 	    console.log("websocket错误");
-	    window.location.href = "${ctx}";
+	    window.location.reload();
 	};
 	websocket.onclose = function(evnt) {
 	    console.log("websocket关闭");
+	    window.location.reload();
 	}
 }
 function messageHandler(data){
@@ -387,9 +398,12 @@ function messageHandler(data){
 		alert("有玩家退出！");
 		return;
 	}
-	initInfo(data);
 	var content = data['content'];
-	boardInfo['nextUsesrName'] = content['nextUserName'];
+	if(null != content){
+		initInfo(data);
+		boardInfo['nextUsesrName'] = content['nextUserName'];
+	}
+
 	if(callbacks[data['url']]!=null){
 		callbacks[data['url']](data);
 	}
@@ -411,6 +425,7 @@ var callbacks = {
 			$(".info .chessStatus").html("胜负已分，游戏结束！");
 			$("#restartgame").show();
 			boardInfo['ready'] = false;
+			setTimeout('alert("胜负已分，游戏结束！")',100);
 		},
 		"recover" : function(data){
 			var content = data['content'];
@@ -418,6 +433,18 @@ var callbacks = {
 				var item = content[i];
 				chessed(item['x'], item['y'], "BLACK" == item['color']);
 			}
+		},
+		"restart_request" : function(data){
+			if(confirm("对方请求重新开始,确认重新开始?")) {
+				$("#restartgame").click();
+		    } 
+		},
+		"restart_reload_page" : function(data){
+			alert('准备妥当,开始游戏!');
+			window.location.reload();
+		},
+		"reload_page" : function(data){
+			window.location.reload();
 		}
 }
 
@@ -428,6 +455,9 @@ $.extend({"wuziqi" : {
 
 $(function(){
 	connectServer();
+	if(null != checkAndKeepUrl){
+		checkAndKeep();
+	}
 });
 
 function initInfo(data){
@@ -481,24 +511,12 @@ function exitRoom(){
 		};
 		sendPost(url, data, callback);
 }
-	function sendPost(url, data, callback) {
-		$.ajax({
-			url : url,
-			type : 'POST', //GET
-			async : false, //或false,是否异步
-			data : data,
-			//dataType : 'json', //返回的数据格式：json/xml/html/script/jsonp/text
-			success : function(data, textStatus, jqXHR) {
-				callback(data);
-			},
-			error : function(xhr, textStatus) {
-				alert("通信出现错误！");
-				console.log('错误');
-				console.log(xhr);
-				console.log(textStatus);
-			}
-		});
-	}
+
+function restart(){
+	var data = {"url" : "restart" };
+	websocket.send(JSON.stringify(data));
+	setTimeout('alert("重新开始请求已发送！")',100);
+}
 </script>
 
 

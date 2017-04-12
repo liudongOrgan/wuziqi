@@ -12,7 +12,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.alibaba.fastjson.JSONObject;
 import com.liudong.annotation.SocketMapping;
-import com.liudong.controller.ChessBoardController;
+import com.liudong.controller.ChessBoardCtrl;
 import com.liudong.controller.SystemWebSocketHandler;
 
 @Service
@@ -20,7 +20,7 @@ public class ChessBoardProxy {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Autowired
-	ChessBoardController chessBoardController;
+	ChessBoardCtrl chessBoardController;
 
 	/**
 	 * 实现基本的代理。 缺少url冲突的处理

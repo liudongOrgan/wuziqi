@@ -115,6 +115,7 @@ function createRoom() {
 			alert("房间名称重复请重试！");
 		}
 		if ("success" == data['status']) {
+			alert("房间创建成功,即将进入房间!");
 			window.location.href = "${ctx}/wuziqi";
 		}
 	};

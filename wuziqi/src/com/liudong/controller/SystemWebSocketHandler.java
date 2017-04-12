@@ -16,14 +16,14 @@ import org.springframework.web.socket.WebSocketSession;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.liudong.model.Chess;
 import com.liudong.model.Key;
 import com.liudong.model.Room;
 import com.liudong.proxy.ChessBoardProxy;
 
 public class SystemWebSocketHandler implements WebSocketHandler {
 
-	private static final Logger logger = LoggerFactory.getLogger(SystemWebSocketHandler.class);
+	private static final Logger logger = LoggerFactory
+	        .getLogger(SystemWebSocketHandler.class);
 
 	private static final Map<String, WebSocketSession> sessions = new HashMap<String, WebSocketSession>();
 	@Autowired
@@ -33,8 +33,10 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
 	// 连接建立后处理
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws IOException {
-		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
+	public void afterConnectionEstablished(WebSocketSession session)
+	        throws IOException {
+		String userName = (String) session.getAttributes().get(
+		        Key.WEBSOCKET_USERNAME);
 		logger.debug("connect to the websocket success......  " + userName);
 		if (StringUtils.isNotBlank(userName)) {
 			WebSocketSession sessionold = sessions.get(userName);
@@ -46,7 +48,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 				}
 			}
 			sessions.put(userName, session);
-			
+
 			// chessService.connected(session, this);
 			JSONObject json = new JSONObject();
 			json.put("url", "connected");
@@ -55,37 +57,29 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	}
 
 	// 接收文本消息，并发送出去
-	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+	public void handleMessage(WebSocketSession session,
+	        WebSocketMessage<?> message) throws Exception {
 		Object obj = message.getPayload();
-		Chess chess = new Chess();
 		try {
 			JSONObject json = JSON.parseObject(obj.toString());
 			chessBoard.doService(session, this, json);
-			int x = json.getIntValue("x");
-			int y = json.getIntValue("y");
-			boolean validate = x > -1 && x < 16;
-			validate = validate && y > -1 && y < 16;
-			if (false == validate) {
-				throw new Exception("接收到坐标错误!");
-			}
-			chess.setX(x);
-			chess.setY(y);
 		} catch (Exception e) {
 			logger.error("解析消息出错！", e);
 			return;
 		}
-		chessService.chess(session, this, chess);
 	}
 
 	// 抛出异常时处理
 	@Override
-	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+	public void handleTransportError(WebSocketSession session,
+	        Throwable exception) throws Exception {
 		if (session.isOpen()) {
 			session.close();
 		}
 		logger.debug("websocket connection closed......");
 		chessService.close(session, this);
-		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
+		String userName = (String) session.getAttributes().get(
+		        Key.WEBSOCKET_USERNAME);
 		if (StringUtils.isNotBlank(userName)) {
 			sessions.remove(userName);
 		}
@@ -93,10 +87,12 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
 	// 连接关闭后处理
 	@Override
-	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+	public void afterConnectionClosed(WebSocketSession session,
+	        CloseStatus closeStatus) throws Exception {
 		logger.debug("websocket connection closed......");
 		chessService.close(session, this);
-		String userName = (String) session.getAttributes().get(Key.WEBSOCKET_USERNAME);
+		String userName = (String) session.getAttributes().get(
+		        Key.WEBSOCKET_USERNAME);
 		if (StringUtils.isNotBlank(userName)) {
 			sessions.remove(userName);
 		}
@@ -109,7 +105,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
 	/**
 	 * 给房间用户发送消息
-	 *
+	 * 
 	 * @param message
 	 */
 	public void sendMessageToRoom(TextMessage message, Room r) {
@@ -119,7 +115,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 
 	/**
 	 * 给某个用户发送消息
-	 *
+	 * 
 	 * @param userName
 	 * @param message
 	 */
@@ -127,7 +123,9 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 		if (StringUtils.isBlank(userName))
 			return;
 		WebSocketSession user = sessions.get(userName);
-		if (null != user && user.getAttributes().get(Key.WEBSOCKET_USERNAME).equals(userName)) {
+		if (null != user
+		        && user.getAttributes().get(Key.WEBSOCKET_USERNAME)
+		                .equals(userName)) {
 			try {
 				if (user.isOpen()) {
 					user.sendMessage(message);
