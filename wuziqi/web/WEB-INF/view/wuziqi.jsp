@@ -5,10 +5,13 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="${ctx }/static/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
 <script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript"  src="${ctx }/static/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <script type="text/javascript" src="${ctx }/static/js/common.js"></script>
+
 <title>五子棋</title>
 <jsp:include page="../common/jsvarcommon.jsp"></jsp:include>
 <style type="text/css">
@@ -215,8 +218,9 @@ body{overflow-y:scroll;}
 			hover(this, e);
 			return;
 		}
-		if(user['userName'] != boardInfo['nextUsesrName'] || true != boardInfo['ready']){ // 不该当前玩家下棋
-		    alert('请等待对方玩家  \''+boardInfo['nextUsesrName'] +"' 落子！");
+		if( true != boardInfo['ready']) return;
+		if(user['userName'] != boardInfo['nextUsesrName'] ){ // 不该当前玩家下棋
+			showTip('请等待对方玩家  \''+boardInfo['nextUsesrName'] +"' 落子！");
 			return;
 		}
 		sendChessInfo(row, col);
@@ -425,7 +429,7 @@ var callbacks = {
 			$(".info .chessStatus").html("胜负已分，游戏结束！");
 			$("#restartgame").show();
 			boardInfo['ready'] = false;
-			setTimeout('alert("胜负已分，游戏结束！")',100);
+			showTip("胜负已分，游戏结束！");
 		},
 		"recover" : function(data){
 			var content = data['content'];
@@ -440,7 +444,7 @@ var callbacks = {
 		    } 
 		},
 		"restart_reload_page" : function(data){
-			alert('准备妥当,开始游戏!');
+			showTip('准备妥当,开始游戏!');
 			window.location.reload();
 		},
 		"reload_page" : function(data){
@@ -515,7 +519,7 @@ function exitRoom(){
 function restart(){
 	var data = {"url" : "restart" };
 	websocket.send(JSON.stringify(data));
-	setTimeout('alert("重新开始请求已发送！")',100);
+	showTip("重新开始请求已发送！");
 }
 </script>
 

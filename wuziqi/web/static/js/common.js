@@ -34,3 +34,33 @@ function checkAndKeep() {
 	sendPost(url, data, callback);
 	setTimeout("checkAndKeep()", 5 * 60 * 1000); // 5分钟发送一次
 }
+
+
+
+
+//显示加载器  
+function showTip(text) {  
+    if(null == text){
+    	text = "加载中"
+    } 
+    $.mobile.loading('show', {  
+        text: text, //加载器中显示的文字  
+        textVisible: true, //是否显示文字  
+        theme: 'a',        //加载器主题样式a-e  
+        textonly: true,   //是否只显示文字  
+        html: ""           //要显示的html内容，如图片等  
+    });
+    setTimeout("$.mobile.loading('hide')", 2000);
+}  
+
+
+
+
+
+
+
+
+
+
+
+
