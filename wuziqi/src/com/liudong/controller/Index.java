@@ -33,7 +33,7 @@ public class Index {
 		return mv;
 	}
 
-	@RequestMapping("wuziqi")
+	@RequestMapping("chessboardpage")
 	public ModelAndView index2(HttpSession httpSession) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("wuziqi");

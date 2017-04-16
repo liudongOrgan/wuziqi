@@ -109,14 +109,14 @@ function createRoom() {
 	var callback = function(data) {
 		if ("created" == data['status']) {
 			alert("已经创建房间！即将进入房间");
-			window.location.href = "${ctx}/wuziqi";
+			window.location.href = "${ctx}/chessboardpage";
 		}
 		if ("exists" == data['status']) {
 			alert("房间名称重复请重试！");
 		}
 		if ("success" == data['status']) {
 			alert("房间创建成功,即将进入房间!");
-			window.location.href = "${ctx}/wuziqi";
+			window.location.href = "${ctx}/chessboardpage";
 		}
 	};
 	sendPost(url, data, callback);
@@ -130,7 +130,7 @@ function enterRoom(us) {
 	var callback = function(data) {
 		if ("success" == data.status) {
 			alert("进入房间成功！");
-			window.location.href = "${ctx}/wuziqi";
+			window.location.href = "${ctx}/chessboardpage";
 		} else {
 			alert("进入房间失败！");
 			window.location.reload();
@@ -170,7 +170,7 @@ function alertUserName(){
 		    <li id="skull"><a href="javascript:createRoom()">创 建 房 间 </a></li>
 		    <li id="skull"><a href="javascript:alertUserName()">个 人 信 息</a></li>
 		    <c:if test="${room != null}">
-		    	<li id="skull"><a href="#" onclick="window.location.href = '${ctx}/wuziqi'">进入游戏中房间</a></li>
+		    	<li id="skull"><a href="#" onclick="window.location.href = '${ctx}/chessboardpage'">进入游戏中房间</a></li>
 		    </c:if>
 		    <li id="skull"><a href="javascript:exitSystem()">退&nbsp;&nbsp;出</a></li>
 		</ul>

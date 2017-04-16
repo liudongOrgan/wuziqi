@@ -12,7 +12,7 @@
 
 <meta name="viewport" content="width=device-width" />
 <script>
-
+	
 	function submit(){
 		var name = $("#name").val();
 		if(null == name || "" == name.trim()){
