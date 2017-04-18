@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
 <link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="${ctx }/static/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">

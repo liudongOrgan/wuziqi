@@ -122,11 +122,34 @@ public class ChessServices {
 			j.setStatus("over");
 		j.setContent(chess);
 		TextMessage message = new TextMessage(JSON.toJSONString(j));
-		handler.sendMessageToRoom(message, r);
+		SystemWebSocketHandler.sendMessageToRoom(message, r);
 	}
 
 	// 退出
 	public void close(WebSocketSession session, SystemWebSocketHandler hand) {
+	}
+
+	/**
+	 * 玩家认输
+	 */
+	public boolean defeated(WebSocketSession session,
+	        SystemWebSocketHandler hand, HttpSession sess) {
+
+		Room r = SessionUtil.getRoomBySession(sess);
+		User u = SessionUtil.getUserBySession(sess);
+		if (null == r || null == u)
+			return false;
+		r.setStatus(RoomStatus.OVER);
+		r.setUser1Ready(false);
+		r.setUser2Ready(false);
+		r.reset();
+		JsonResult<String> j = new JsonResult<String>();
+		j.setStatus(ChessboardCode.DEFEATED_REQUEST);
+		j.setUrl(ChessboardCode.DEFEATED_REQUEST);
+		j.setContent(u.getUserName());
+		TextMessage message = new TextMessage(JSON.toJSONString(j));
+		SystemWebSocketHandler.sendMessageToRoom(message, r);
+		return true;
 	}
 
 	/**
@@ -165,6 +188,7 @@ public class ChessServices {
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		j.setStatus("exit");
 		if (r.isUser1Ready() && r.isUser2Ready()) { // 游戏重新开始,刷新页面
+			r.setStatus(RoomStatus.ING);
 			j.setStatus(ChessboardCode.RESTART_RELOAD_PAGE);
 			j.setUrl(ChessboardCode.RESTART_RELOAD_PAGE);
 			TextMessage message = new TextMessage(JSON.toJSONString(j));

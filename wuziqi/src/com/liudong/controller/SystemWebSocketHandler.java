@@ -108,7 +108,7 @@ public class SystemWebSocketHandler implements WebSocketHandler {
 	 * 
 	 * @param message
 	 */
-	public void sendMessageToRoom(TextMessage message, Room r) {
+	public static void sendMessageToRoom(TextMessage message, Room r) {
 		sendMessageToUser(r.getUser1Name(), message);
 		sendMessageToUser(r.getUser2Name(), message);
 	}

@@ -8,4 +8,7 @@ public class ChessboardCode {
 	public static final String RELOAD_PAGE = "reload_page";
 	/** 重新开启请求 要求重新加载页面 */
 	public static final String RESTART_RELOAD_PAGE = "restart_reload_page";
+
+	/** 玩家的认输请求 */
+	public static final String DEFEATED_REQUEST = "defeated_request";
 }

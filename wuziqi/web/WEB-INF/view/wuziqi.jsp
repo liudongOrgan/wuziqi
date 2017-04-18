@@ -6,7 +6,7 @@
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="${ctx }/static/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
-<script type="text/javascript" src="${ctx }/static/js/jquery-3.1.1.min.js"></script>
+<script type="text/javascript" src="${ctx }/static/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript"  src="${ctx }/static/jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
 <link rel="icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
 <link rel="shortcut icon" href="${ctx }/static/picture/favicon.ico" type="image/x-icon" />
@@ -54,7 +54,7 @@ body{overflow-y:scroll;}
 </style>
 </head>
 <body>
-
+<div data-role="page" class="" style="min-width: 650px;">
 	<canvas class="text">PK</canvas>
 	<div class="gobang">
 		<canvas id="can" width="640" height="640"
@@ -70,10 +70,200 @@ body{overflow-y:scroll;}
 			<source src="${ctx }/static/sound/sound.ogg" type="audio/ogg">
 			您的浏览器不支持 audio 与元素。
 		</audio>
-
-
 	</div>
-	<script>
+
+	<div class="info">
+		自己昵称：<span class="curName"></span><br> 
+		对手大名：<span class="rivalName"></span><br> 
+		当前状态：<span class="chessStatus"></span><br>
+		所持棋子：<img class="black" src="${ctx }/static/picture/black.png" /><img class="white" src="${ctx }/static/picture/white.png" /><br> 
+		<button id="restartgame" style="display:none; margin-bottom:1em;" onclick="restart()">重新开始</button>
+		<button id="lose" style="display:none;margin-bottom:1em;" onclick="defeated()">认 输</button>
+		<input type="button" value="离开房间" onclick="exitRoom()" style="  margin-bottom:1em;" /> <br> 
+ 		
+	</div>
+	 
+</div>
+</body>
+
+<script>
+var user = JSON.parse('${user}');
+var room = JSON.parse('${room}');
+var boardInfo = {};
+var host = window.location.host;
+var websocket;
+function connectServer(){
+	if ('WebSocket' in window) {
+	    websocket = new WebSocket("ws://" + host + "${appname}/ws?jsessionid=<%=session.getId()%>" );
+	} else if ('MozWebSocket' in window) {
+	    websocket = new MozWebSocket("ws://" + host + "/ws?jsessionid=<%=session.getId()%>");
+	}
+	websocket.onopen = function(evnt) {
+	    console.log("websocket连接上");
+	};
+	websocket.onmessage = function(evnt) {
+	    messageHandler(evnt.data);
+	};
+	websocket.onerror = function(evnt) {
+	    console.log("websocket错误");
+	    window.location.reload();
+	};
+	websocket.onclose = function(evnt) {
+	    console.log("websocket关闭");
+	    //window.location.reload();
+	}
+}
+function messageHandler(data){
+	data = JSON.parse(data);
+	if('exit' == data['status']){
+		$(".info .chessStatus").html("有玩家退出！");
+		$(".info .rivalName").html("");
+		boardInfo['ready'] = false;
+		alert("有玩家退出！");
+		return;
+	}
+	var content = data['content'];
+	if(null != content){
+		initInfo(data);
+		boardInfo['nextUsesrName'] = content['nextUserName'];
+	}
+
+	if(callbacks[data['url']]!=null){
+		callbacks[data['url']](data);
+	}
+}
+
+var callbacks = {
+		"chess" : function (data){
+			var content = data['content'];
+			boardInfo['nextUsesrName'] = content['nextUserName'];
+			var c = content['x']>-1 && content['x']<16;
+			c = c && content['y']>-1 && content['y'] < 16;
+			if(true == c){
+				playSound();
+				chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
+			}	
+		},
+		"over" : function(data){
+			this.chess(data);
+			$(".info .chessStatus").html("胜负已分，游戏结束！");
+			$("#restartgame").show();
+			$("#restartgame_menu").show();
+			boardInfo['ready'] = false;
+			showTip("胜负已分，游戏结束！");
+		},
+		"recover" : function(data){
+			var content = data['content'];
+			for(var i in content){
+				var item = content[i];
+				chessed(item['x'], item['y'], "BLACK" == item['color']);
+			}
+		},
+		"restart_request" : function(data){
+			if(confirm("对方请求重新开始,确认重新开始?")) {
+				$("#restartgame").click();
+		    } 
+		},
+		"restart_reload_page" : function(data){
+			showTip('准备妥当,开始游戏!');
+			setTimeout('window.location.reload();', 666);
+		},
+		"reload_page" : function(data){
+			window.location.reload();
+		},
+		"defeated_request" : function(data){
+			showTip("玩家 \'"+data['content']+"\' 认输，游戏结束！");
+			$(".info .chessStatus").html("玩家 \'"+data['content']+"\' 认输，游戏结束！");
+			$("#restartgame").show();
+		}
+}
+
+$.extend({"wuziqi" : {
+	"canRecover" : true
+}});
+
+
+$(function(){
+	connectServer();
+	if(null != checkAndKeepUrl){
+		checkAndKeep();
+	}
+	checkLoseBtn();
+});
+
+function checkLoseBtn(){
+	if("ING" == room['status']){
+		$("#lose").show();
+	}
+	if("OVER" == room['status']){
+		$("#restartgame").show();
+	}
+}
+
+function initInfo(data){
+	$(".info .curName").html(user['userName']);
+	if(user['userName'] == room['user1Name']){
+		$(".info .white").hide();
+	} else{
+		$(".info .black").hide();
+	}
+	if(user['userName'] == room['user1Name']){
+		$(".info .rivalName").html(room['user2Name']);
+	} else{
+		$(".info .rivalName").html(room['user1Name']);
+	}
+	var content = data['content'];
+	if('connected' == data['status']){
+		boardInfo['ready'] = true;
+		var opname = content['opUserName'];
+		if(user['userName'] == opname.split(",")[0]){
+			$(".info .rivalName").html(opname.split(",")[1]);
+		} else {
+			$(".info .rivalName").html(opname.split(",")[0]);
+		}
+	}
+	if( 'connected-one' == data['status']){
+		$(".info .chessStatus").html("等待 玩家 加入");
+	} else if(user['userName'] == content['nextUserName']){
+		$(".info .chessStatus").html("等待 自己 下棋");
+	} else {
+		$(".info .chessStatus").html("等待 对手 下棋");
+	}
+	if( 'connected-first' == data['status'] ){
+	    alert('开始游戏！');
+		window.location.reload();
+	}
+}
+
+function exitRoom(){
+		var roomname = room['roomeName'];
+		var data = {
+			"roomname" : roomname
+		};
+		var url = "backroom";
+		var callback = function(data) {
+			if ("success" == data.status) {
+				alert("退出房间成功！");
+				window.location.href = "${ctx}";
+			} else {
+				alert("退出房间失败！");
+			}
+		};
+		sendPost(url, data, callback);
+}
+
+function restart(){
+	var data = {"url" : "restart" };
+	websocket.send(JSON.stringify(data));
+	showTip("重新开始请求已发送！");
+}
+
+function defeated(){
+	var data = {"url" : "defeated" };
+	websocket.send(JSON.stringify(data));
+	showTip("请求已发送！");
+}
+
 	function playSound(){
 		bgMusic.play();
 	} 
@@ -218,7 +408,7 @@ body{overflow-y:scroll;}
 			hover(this, e);
 			return;
 		}
-		if( true != boardInfo['ready']) return;
+		if( true != boardInfo['ready'] || null == boardInfo['nextUsesrName']) return;
 		if(user['userName'] != boardInfo['nextUsesrName'] ){ // 不该当前玩家下棋
 			showTip('请等待对方玩家  \''+boardInfo['nextUsesrName'] +"' 落子！");
 			return;
@@ -353,175 +543,19 @@ body{overflow-y:scroll;}
 			total = 1;
 		}
 	}
-</script>
-
-
-	<div class="info">
-		自己昵称：<span class="curName"></span><br> 
-		对手大名：<span class="rivalName"></span><br> 
-		当前状态：<span class="chessStatus"></span><br>
-		所持棋子：<img class="black" src="${ctx }/static/picture/black.png" /><img class="white" src="${ctx }/static/picture/white.png" /><br> 
-		<input type="button" value="离开房间" onclick="exitRoom()" style="width:300px;height:55px; margin-bottom:50px;" /> <br> 
-		<input id="restartgame" type="button" value="重新开始" onclick="restart();" style="display:none;width:300px;height:55px; margin-bottom:50px;" />
-	</div>
-</body>
-
-<script>
-var user = JSON.parse('${user}');
-var room = JSON.parse('${room}');
-var boardInfo = {};
-var host = window.location.host;
-var websocket;
-function connectServer(){
-	if ('WebSocket' in window) {
-	    websocket = new WebSocket("ws://" + host + "${appname}/ws?jsessionid=<%=session.getId()%>" );
-	} else if ('MozWebSocket' in window) {
-	    websocket = new MozWebSocket("ws://" + host + "/ws?jsessionid=<%=session.getId()%>");
-	}
-	websocket.onopen = function(evnt) {
-	    console.log("websocket连接上");
-	};
-	websocket.onmessage = function(evnt) {
-	    messageHandler(evnt.data);
-	};
-	websocket.onerror = function(evnt) {
-	    console.log("websocket错误");
-	    window.location.reload();
-	};
-	websocket.onclose = function(evnt) {
-	    console.log("websocket关闭");
-	    window.location.reload();
-	}
-}
-function messageHandler(data){
-	data = JSON.parse(data);
-	if('exit' == data['status']){
-		$(".info .chessStatus").html("有玩家退出！");
-		$(".info .rivalName").html("");
-		boardInfo['ready'] = false;
-		alert("有玩家退出！");
-		return;
-	}
-	var content = data['content'];
-	if(null != content){
-		initInfo(data);
-		boardInfo['nextUsesrName'] = content['nextUserName'];
-	}
-
-	if(callbacks[data['url']]!=null){
-		callbacks[data['url']](data);
-	}
-}
-
-var callbacks = {
-		"chess" : function (data){
-			var content = data['content'];
-			boardInfo['nextUsesrName'] = content['nextUserName'];
-			var c = content['x']>-1 && content['x']<16;
-			c = c && content['y']>-1 && content['y'] < 16;
-			if(true == c){
-				playSound();
-				chessed(content['x'], content['y'], room['user1Name'] == content['opUserName'] );
-			}	
-		},
-		"over" : function(data){
-			this.chess(data);
-			$(".info .chessStatus").html("胜负已分，游戏结束！");
-			$("#restartgame").show();
-			boardInfo['ready'] = false;
-			showTip("胜负已分，游戏结束！");
-		},
-		"recover" : function(data){
-			var content = data['content'];
-			for(var i in content){
-				var item = content[i];
-				chessed(item['x'], item['y'], "BLACK" == item['color']);
-			}
-		},
-		"restart_request" : function(data){
-			if(confirm("对方请求重新开始,确认重新开始?")) {
-				$("#restartgame").click();
-		    } 
-		},
-		"restart_reload_page" : function(data){
-			showTip('准备妥当,开始游戏!');
-			window.location.reload();
-		},
-		"reload_page" : function(data){
-			window.location.reload();
-		}
-}
-
-$.extend({"wuziqi" : {
-	"canRecover" : true
-}});
-
-
-$(function(){
-	connectServer();
-	if(null != checkAndKeepUrl){
-		checkAndKeep();
-	}
-});
-
-function initInfo(data){
-	$(".info .curName").html(user['userName']);
-	if(user['userName'] == room['user1Name']){
-		$(".info .white").hide();
-	} else{
-		$(".info .black").hide();
-	}
-	if(user['userName'] == room['user1Name']){
-		$(".info .rivalName").html(room['user2Name']);
-	} else{
-		$(".info .rivalName").html(room['user1Name']);
-	}
-	var content = data['content'];
-	if('connected' == data['status']){
-		boardInfo['ready'] = true;
-		var opname = content['opUserName'];
-		if(user['userName'] == opname.split(",")[0]){
-			$(".info .rivalName").html(opname.split(",")[1]);
-		} else {
-			$(".info .rivalName").html(opname.split(",")[0]);
-		}
-	}
-	if( 'connected-one' == data['status']){
-		$(".info .chessStatus").html("等待 玩家 加入");
-	} else if(user['userName'] == content['nextUserName']){
-		$(".info .chessStatus").html("等待 自己 下棋");
-	} else {
-		$(".info .chessStatus").html("等待 对手 下棋");
-	}
-	if( 'connected-first' == data['status'] ){
-	    alert('开始游戏！');
-		window.location.reload();
-	}
-}
-
-function exitRoom(){
-		var roomname = room['roomeName'];
-		var data = {
-			"roomname" : roomname
-		};
-		var url = "backroom";
+	
+	function alertUserName(){
+		var data = {};
+		var url = "${ctx}/getuserinfo";
 		var callback = function(data) {
-			if ("success" == data.status) {
-				alert("退出房间成功！");
-				window.location.href = "${ctx}";
+			if (null == data || null == data['content']) {
 			} else {
-				alert("退出房间失败！");
+				user = data['content'];
+				alert("昵称：" + user['userName']);
 			}
 		};
 		sendPost(url, data, callback);
-}
-
-function restart(){
-	var data = {"url" : "restart" };
-	websocket.send(JSON.stringify(data));
-	showTip("重新开始请求已发送！");
-}
+	}
 </script>
-
 
 </html>

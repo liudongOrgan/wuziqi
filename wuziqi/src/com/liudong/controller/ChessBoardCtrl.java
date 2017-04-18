@@ -34,6 +34,12 @@ public class ChessBoardCtrl {
 		        Key.WEBSOCKET_HTTP_SESS);
 		chessService.restart(session, handler, sess);
 	}
+	@SocketMapping(path = "defeated")
+	public void defeated(SystemWebSocketHandler handler, WebSocketSession session) {
+		HttpSession sess = (HttpSession) session.getAttributes().get(
+		        Key.WEBSOCKET_HTTP_SESS);
+		chessService.defeated(session, handler, sess);
+	}
 
 	@SocketMapping(path = "chess")
 	public boolean chess(JSONObject mess, SystemWebSocketHandler handler,
