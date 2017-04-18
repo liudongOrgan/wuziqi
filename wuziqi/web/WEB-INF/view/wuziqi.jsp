@@ -51,6 +51,7 @@ body{overflow-y:scroll;}
 	border: 1px solid green;
 	display: block;
 }
+.info buttom{height:4em;}
 </style>
 </head>
 <body>

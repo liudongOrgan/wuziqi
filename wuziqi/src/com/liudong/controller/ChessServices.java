@@ -188,6 +188,7 @@ public class ChessServices {
 		JsonResult<Chess> j = new JsonResult<Chess>();
 		j.setStatus("exit");
 		if (r.isUser1Ready() && r.isUser2Ready()) { // 游戏重新开始,刷新页面
+			r.reset();
 			r.setStatus(RoomStatus.ING);
 			j.setStatus(ChessboardCode.RESTART_RELOAD_PAGE);
 			j.setUrl(ChessboardCode.RESTART_RELOAD_PAGE);
