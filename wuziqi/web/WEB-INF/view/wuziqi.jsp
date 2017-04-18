@@ -265,9 +265,12 @@ function defeated(){
 	showTip("请求已发送！");
 }
 
-	function playSound(){
-		bgMusic.play();
-	} 
+function playSound(){
+	bgMusic.play();
+	if(window.android){
+		window.android.playSound();
+	}
+} 
 
 
 
